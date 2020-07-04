@@ -1,0 +1,7 @@
+{
+    "HOME": "/",
+    "PROFILE": "/profile/:id",
+    "POST": "/post/:id",
+    "LOGIN": "/login",
+    "REGISTER": "/register"
+}
