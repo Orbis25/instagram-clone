@@ -1,5 +1,5 @@
 import firebaseConfig from "../../firebase/index";
-import { RegisterModel } from "../../models/AuthModels";
+import { RegisterModel, AuthModel } from "../../models/AuthModels";
 import { User } from "../../models/UserModel";
 import { users } from "../../firebase/colections.json";
 import firebase from "firebase";
@@ -12,5 +12,10 @@ export default class AuthService {
   }
   addUserDetail(user: User): Promise<any> {
     return firebaseConfig.firestore().collection(users).add(user);
+  }
+  login(user: AuthModel): Promise<firebase.auth.UserCredential> {
+    return firebase
+      .auth()
+      .signInWithEmailAndPassword(user.email, user.password);
   }
 }

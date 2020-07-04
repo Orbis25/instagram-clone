@@ -6,6 +6,6 @@ export interface RegisterModel {
 }
 
 export interface AuthModel {
-  userName: string;
+  email: string;
   password: string;
 }
