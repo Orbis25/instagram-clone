@@ -22,6 +22,9 @@ export default class AuthService {
       .auth()
       .signInWithEmailAndPassword(user.email, user.password);
   }
+  ressetPassword(email: string) {
+    return firebaseConfig.auth().sendPasswordResetEmail(email);
+  }
   logout(): void {
     localStorage.removeItem("auth");
     firebaseConfig.auth().signOut();

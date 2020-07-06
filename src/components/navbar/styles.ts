@@ -34,7 +34,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       color: "#DEDEDE",
     },
     inputRoot: {
-      color: "inherit",
+      color: "#000",
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
@@ -55,12 +55,16 @@ export const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
     },
     inconleft: {
-      marginLeft: 20,
+      marginLeft: 13,
     },
     smallAvatar: {
-      marginLeft: 20,
+      marginLeft: 13,
       width: theme.spacing(4),
       height: theme.spacing(4),
+    },
+    iconColor: {
+      color: "#000",
+      fontSize:33
     },
   })
 );

@@ -1,14 +1,17 @@
 import React from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Switch } from "react-router-dom";
 import { Grid } from "@material-ui/core";
-import { RouteProps } from "react-router";
+import { RouteProps, Route } from "react-router";
 
 import AppBar from "../components/navbar";
 import HomePage from "../pages/home";
+import RegistePage from "../pages/register";
+import LoginPage from "../pages/login";
+import ResetPasswordPage from "../pages/resetPassword";
 
-import { HOME } from "./routes.json";
-
+import { HOME, LOGIN, REGISTER, RESET_PASSWORD } from "./routes.json";
 import { routes } from "./utils";
+import { ProtectedRoute } from "./protected.routes";
 
 const Router: React.FC<RouteProps> = (props) => {
   const Header: React.FC<RouteProps> = (props) => (
@@ -24,9 +27,12 @@ const Router: React.FC<RouteProps> = (props) => {
           <Header {...props} />
           <Grid item xs={12}>
             <Switch>
-              <Route exact path={HOME} component={HomePage} />
+              <Route path={REGISTER} component={RegistePage} />
+              <Route path={LOGIN} component={LoginPage} />
+              <Route path={RESET_PASSWORD} component={ResetPasswordPage} />
+              <ProtectedRoute exact path={HOME} component={HomePage} />
               {routes.map((route, index) => (
-                <Route
+                <ProtectedRoute
                   path={route.path}
                   component={route.component}
                   key={index}

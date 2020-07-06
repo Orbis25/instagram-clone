@@ -21,5 +21,13 @@ body {
 }
 
 .text-error {
-  color: #F44336;
+  color: #f44336;
+}
+
+.text-success {
+  color: #4caf50;
+}
+
+.no-text-decoration {
+  text-decoration: none !important;
 }

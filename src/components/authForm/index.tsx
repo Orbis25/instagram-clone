@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   TextField,
   Grid,
   Button,
   Typography,
   Container,
+  CircularProgress,
 } from "@material-ui/core";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 
 import { primary } from "../../utils/colors.json";
 import { useStyles } from "./styles";
@@ -17,6 +18,7 @@ import { AuthModel } from "../../models/AuthModels";
 import { authenticatedUser } from "../../redux/actions/users/auth";
 import validationScheme from "./validationSchema";
 import { RootState } from "../../redux/reducers";
+import { RESET_PASSWORD } from "../../router/routes.json";
 const AuthForm = () => {
   const initialValues: AuthModel = {
     email: "",
@@ -24,12 +26,14 @@ const AuthForm = () => {
   };
   const classes = useStyles();
   const dispach = useDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { errorMessage, isAutenticated } = useSelector(
     (state: RootState) => state.AuthReducer
   );
-  
+
   const handlerLogin = (values: AuthModel): void => {
+    setIsLoading(true);
     dispach(authenticatedUser(values));
   };
 
@@ -74,16 +78,20 @@ const AuthForm = () => {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    style={{ background: primary, color: "#fff" }}
-                    variant="contained"
-                    size="small"
-                    type="submit"
-                    fullWidth
-                  >
-                    Log in
-                  </Button>
+                <Grid item xs={12} className="text-center">
+                  {isLoading ? (
+                    <CircularProgress size={25} />
+                  ) : (
+                    <Button
+                      style={{ background: primary, color: "#fff" }}
+                      variant="contained"
+                      size="small"
+                      type="submit"
+                      fullWidth
+                    >
+                      Log in
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </form>
@@ -103,7 +111,12 @@ const AuthForm = () => {
                 <FacebookIcon fontSize="small" />
                 <p>Log in with Facebook</p>
               </Button>
-              <p className={classes.forgotText}>Forgot password?</p>
+
+              <p className={classes.forgotText}>
+                <Link className="no-text-decoration" to={RESET_PASSWORD}>
+                  Forgot password?
+                </Link>
+              </p>
             </Grid>
           </Grid>
         </Container>

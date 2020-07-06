@@ -3,5 +3,6 @@
     "PROFILE": "/profile/:id",
     "POST": "/post/:id",
     "LOGIN": "/login",
-    "REGISTER": "/register"
+    "REGISTER": "/register",
+    "RESET_PASSWORD": "/accounts/reset/password"
 }

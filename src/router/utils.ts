@@ -2,10 +2,8 @@ import { RouteType } from "./types";
 
 import PostPage from "../pages/post";
 import ProfilePage from "../pages/profile";
-import RegisterPage from "../pages/register";
-import LoginPage from "../pages/login";
 
-import { PROFILE, POST, REGISTER, LOGIN } from "./routes.json";
+import { PROFILE, POST } from "./routes.json";
 
 export const routes: RouteType[] = [
   {
@@ -15,13 +13,5 @@ export const routes: RouteType[] = [
   {
     path: POST,
     component: PostPage,
-  },
-  {
-    path: REGISTER,
-    component: RegisterPage,
-  },
-  {
-    path: LOGIN,
-    component: LoginPage,
   },
 ];

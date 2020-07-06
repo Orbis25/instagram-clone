@@ -1,16 +1,27 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import { LOGIN } from "./routes.json";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/reducers";
 
 type ComponentProps = {
   component: React.FC;
+  path: string;
+  exact?: boolean | undefined;
 };
 
-const ProtectedRoute: React.FC<ComponentProps> = ({ component }) => {
-  const isAutenticated = true;
-  const Component = component;
+export const ProtectedRoute: React.FC<ComponentProps> = ({
+  component,
+  path,
+  exact,
+}) => {
+  const { isAutenticated } = useSelector(
+    (state: RootState) => state.AuthReducer
+  );
 
-  return isAutenticated ? <Component /> : <Redirect to={LOGIN} />;
+  return isAutenticated ? (
+    <Route exact={exact} path={path} component={component} />
+  ) : (
+    <Redirect to={LOGIN} />
+  );
 };
-
-export default ProtectedRoute;

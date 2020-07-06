@@ -7,7 +7,7 @@ import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 import { useStyles } from "./styles";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 import { RouteProps } from "react-router";
-import { LOGIN, REGISTER } from "../../router/routes.json";
+import { LOGIN, REGISTER, RESET_PASSWORD } from "../../router/routes.json";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const classes = useStyles();
@@ -15,8 +15,10 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const _renderIcons = () => {
     return (
       <Grid className={classes.appSectionIcons} item xs={4}>
-        <HomeOutlinedIcon fontSize="large" />
-        <FavoriteBorderIcon className={classes.inconleft} fontSize="large" />
+        <HomeOutlinedIcon className={classes.iconColor} />
+        <FavoriteBorderIcon
+          className={`${classes.iconColor} ${classes.inconleft}`}
+        />
         <Avatar
           className={classes.smallAvatar}
           alt="logo.png"
@@ -47,7 +49,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const Header = () => {
     return (
       <div style={{ flexGrow: 1 }}>
-        <AppBar position="static" color="transparent">
+        <AppBar position="static" style={{ background: "#fff" }}>
           <Container>
             <Grid container spacing={10}>
               <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
@@ -80,6 +82,8 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
       case REGISTER:
         return null;
       case LOGIN:
+        return null;
+      case RESET_PASSWORD:
         return null;
       default:
         return <Header />;

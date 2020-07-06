@@ -16,6 +16,7 @@ export const useStyles = makeStyles(() =>
     },
     forgotText: {
       fontSize: 12,
+      textDecoration: "none",
     },
   })
 );
