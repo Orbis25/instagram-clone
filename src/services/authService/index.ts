@@ -5,6 +5,10 @@ import { users } from "../../firebase/colections.json";
 import firebase from "firebase";
 
 export default class AuthService {
+  /**
+   * create the user
+   * @param model
+   */
   createUser(model: RegisterModel): Promise<firebase.auth.UserCredential> {
     return firebaseConfig
       .auth()
@@ -14,8 +18,12 @@ export default class AuthService {
     return firebaseConfig.firestore().collection(users).add(user);
   }
   login(user: AuthModel): Promise<firebase.auth.UserCredential> {
-    return firebase
+    return firebaseConfig
       .auth()
       .signInWithEmailAndPassword(user.email, user.password);
+  }
+  logout(): void {
+    localStorage.removeItem("auth");
+    firebaseConfig.auth().signOut();
   }
 }

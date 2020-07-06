@@ -8,25 +8,35 @@ import {
 } from "@material-ui/core";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import { Formik } from "formik";
+import { useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 
 import { primary } from "../../utils/colors.json";
 import { useStyles } from "./styles";
 import { AuthModel } from "../../models/AuthModels";
+import { authenticatedUser } from "../../redux/actions/users/auth";
 import validationScheme from "./validationSchema";
+import { RootState } from "../../redux/reducers";
 const AuthForm = () => {
   const initialValues: AuthModel = {
     email: "",
     password: "",
   };
   const classes = useStyles();
+  const dispach = useDispatch();
 
+  const { errorMessage, isAutenticated } = useSelector(
+    (state: RootState) => state.AuthReducer
+  );
+  
   const handlerLogin = (values: AuthModel): void => {
-    console.log(values);
+    dispach(authenticatedUser(values));
   };
 
   return (
     <Grid container spacing={1} justify="center">
       <Grid item xs={10}>
+        {isAutenticated && <Redirect to="/" />}
         <Formik
           validationSchema={validationScheme}
           initialValues={initialValues}
@@ -83,6 +93,9 @@ const AuthForm = () => {
 
       <Grid item xs={10}>
         <Container className={classes.orContainer}>
+          {errorMessage && (
+            <p className="text-center text-error">{errorMessage}</p>
+          )}
           <Typography className={classes.orText}>OR</Typography>
           <Grid container justify="center">
             <Grid item xs={12}>

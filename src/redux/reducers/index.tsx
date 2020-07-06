@@ -1,19 +1,8 @@
 import { combineReducers } from "redux";
+import AuthReducer from "./users/auth";
 
-const initialState = {};
-
-function reducerTest(
-  state = initialState,
-  action: { type: string; payload: object }
-): object {
-  switch (action.type) {
-    case "TEST":
-      return { ...state };
-    default:
-      return { ...state };
-  }
-}
-
-const rootReducer = combineReducers({ reducerTest });
+const rootReducer = combineReducers({ AuthReducer });
 
 export default rootReducer;
+
+export type RootState = ReturnType<typeof rootReducer>

@@ -8,14 +8,18 @@
   box-shadow: none !important;
 }
 
-body{
-  background: #FAFAFA;
+body {
+  background: #fafafa;
 }
 
-.text-center{
+.text-center {
   text-align: center;
 }
 
-.text-muted-primary{
-  color:#8E908E;
+.text-muted-primary {
+  color: #8e908e;
+}
+
+.text-error {
+  color: #F44336;
 }
