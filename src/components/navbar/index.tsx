@@ -4,10 +4,16 @@ import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Avatar from "@material-ui/core/Avatar";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
+
 import { useStyles } from "./styles";
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import { withRouter, RouteComponentProps, Link } from "react-router-dom";
 import { RouteProps } from "react-router";
-import { LOGIN, REGISTER, RESET_PASSWORD } from "../../router/routes.json";
+import {
+  LOGIN,
+  REGISTER,
+  RESET_PASSWORD,
+  PROFILE,
+} from "../../router/routes.json";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const classes = useStyles();
@@ -19,11 +25,13 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
         <FavoriteBorderIcon
           className={`${classes.iconColor} ${classes.inconleft}`}
         />
-        <Avatar
-          className={classes.smallAvatar}
-          alt="logo.png"
-          src="/images/logo.png"
-        />
+        <Link to={PROFILE}>
+          <Avatar
+            className={classes.smallAvatar}
+            alt="logo.png"
+            src="/images/logo.png"
+          />
+        </Link>
       </Grid>
     );
   };
@@ -49,7 +57,10 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const Header = () => {
     return (
       <div style={{ flexGrow: 1 }}>
-        <AppBar position="static" style={{ background: "#fff" }}>
+        <AppBar
+          position="static"
+          className={classes.appBar}
+        >
           <Container>
             <Grid container spacing={10}>
               <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>

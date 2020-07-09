@@ -64,7 +64,13 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     iconColor: {
       color: "#000",
-      fontSize:33
+      fontSize: 33,
+    },
+    appBar: {
+      background: "#fff",
+      boxShadow: "none",
+      border: "solid 1px #dbdbdb",
+      height: 60
     },
   })
 );
