@@ -7,7 +7,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       height: theme.spacing(20),
     },
     userName: {
-      fontSize: 30,
+      fontSize: 28,
       fontWeight: "normal",
     },
     btnEdit: {

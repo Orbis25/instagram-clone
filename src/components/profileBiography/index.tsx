@@ -1,10 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, Typography, Button, Avatar } from "@material-ui/core";
+import Skeleton from "@material-ui/lab/Skeleton";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import { useStyles } from "./style";
+import { ICurrentUser, IUserEntity, IUser } from "../../models/UserModel";
+import { RootState } from "../../redux/reducers";
+import UserService from "../../services/userService";
+import routes from "../../router/routes.json";
 
 const ProfileBiography = () => {
   const classes = useStyles();
+  const service = new UserService();
+
+  const [userEntity, setUserEntity] = useState<IUserEntity | null>(null);
+
+  const currentUser: ICurrentUser = useSelector(
+    (state: RootState) => state.AuthReducer.user
+  );
+
+  useEffect(() => {
+    if (currentUser) {
+      getUserProfile();
+    }
+    // eslint-disable-next-line
+  }, [currentUser]);
+
+  const getUserProfile = () => {
+    service.getUserDetail(currentUser.uid).then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const result = doc.data() as IUser;
+        setUserEntity({
+          docId: doc.id,
+          user: result,
+        });
+      });
+    });
+  };
 
   return (
     <Grid container justify="center">
@@ -12,21 +45,29 @@ const ProfileBiography = () => {
         <Avatar
           className={classes.avatar}
           alt="profile"
-          src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-vector-default-avatar-profile-icon-social-media-user-vector-portrait-176194876.jpg"
+          src="/images/profile.png"
         />
       </Grid>
       <Grid item xs={12} sm={12} md={8} xl={8} lg={8}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <Typography className={classes.userName}>
-              orbisalonzogutierrez
-              <Button
-                className={classes.btnEdit}
-                size="small"
-                variant="outlined"
-              >
-                Edit profile
-              </Button>
+              {userEntity ? (
+                <span>
+                  {userEntity.user.userName}
+                  <Link className="no-text-decoration" to={routes.EDIT_PROFILE}>
+                    <Button
+                      className={classes.btnEdit}
+                      size="small"
+                      variant="outlined"
+                    >
+                      Edit profile
+                    </Button>
+                  </Link>
+                </span>
+              ) : (
+                <Skeleton animation="wave" variant="text" />
+              )}
             </Typography>
           </Grid>
           <Grid className={classes.quantitySectionContainer} item xs={12}>
@@ -42,14 +83,18 @@ const ProfileBiography = () => {
           </Grid>
         </Grid>
         <Typography>
-          <b>Orbis Alonzo Gutierrez</b>
+          <b>{userEntity && userEntity.user.fullName}</b>
         </Typography>
-        <Typography>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi, porro
-          hic quisquam voluptatibus perspiciatis ratione eaque repellendus
-          sequi, optio minima quas laudantium voluptates! Libero corporis neque
-          sint recusandae illum in.
-        </Typography>
+        <Typography>{userEntity && userEntity.user.biography}</Typography>
+        {userEntity && (
+          <a
+            href={userEntity.user.website}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {userEntity.user.website}
+          </a>
+        )}
       </Grid>
     </Grid>
   );

@@ -1,6 +1,6 @@
 import firebaseConfig from "../../firebase/index";
 import { RegisterModel, AuthModel } from "../../models/AuthModels";
-import { User } from "../../models/UserModel";
+import { IUser } from "../../models/UserModel";
 import { users } from "../../firebase/colections.json";
 import firebase from "firebase";
 
@@ -14,7 +14,7 @@ export default class AuthService {
       .auth()
       .createUserWithEmailAndPassword(model.email, model.password);
   }
-  addUserDetail(user: User): Promise<any> {
+  addUserDetail(user: IUser): Promise<any> {
     return firebaseConfig.firestore().collection(users).add(user);
   }
   login(user: AuthModel): Promise<firebase.auth.UserCredential> {
@@ -28,5 +28,16 @@ export default class AuthService {
   logout(): void {
     localStorage.removeItem("auth");
     firebaseConfig.auth().signOut();
+  }
+  getCurrentUser(): Promise<firebase.User | null> {
+    return new Promise((resolved, reject) => {
+      firebaseConfig.auth().onAuthStateChanged(function (user) {
+        if (user) {
+          resolved(user);
+        } else {
+          reject(null);
+        }
+      });
+    });
   }
 }

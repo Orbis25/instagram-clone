@@ -1,9 +1,13 @@
-import { RouteType } from "./types";
-
 import PostPage from "../pages/post";
 import ProfilePage from "../pages/profile";
+import EditProfilePage from "../pages/editProfile";
 
-import { PROFILE, POST } from "./routes.json";
+import { PROFILE, POST, EDIT_PROFILE } from "./routes.json";
+
+interface RouteType {
+  path: string;
+  component: any; //is a component JSX.ELEMENT
+}
 
 export const routes: RouteType[] = [
   {
@@ -13,5 +17,9 @@ export const routes: RouteType[] = [
   {
     path: POST,
     component: PostPage,
+  },
+  {
+    path: EDIT_PROFILE,
+    component: EditProfilePage,
   },
 ];

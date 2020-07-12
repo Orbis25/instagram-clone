@@ -31,3 +31,8 @@ body {
 .no-text-decoration {
   text-decoration: none !important;
 }
+
+.btn-primary {
+  color: #ffffff !important;
+  background: #0095F6 !important;
+}

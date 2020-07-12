@@ -37,12 +37,18 @@ const RegisterForm = () => {
     const service = new AuthService();
     service
       .createUser(values)
-      .then(() => {
+      .then(({ user }) => {
         service
           .addUserDetail({
+            uidUser: user?.uid,
             email: values.email,
             fullName: values.fullName,
             userName: values.fullName,
+            biography: "",
+            gender: "Male",
+            phoneNumber: "",
+            photoURL: "",
+            website: "",
           })
           .then(() => {
             history.push(LOGIN);

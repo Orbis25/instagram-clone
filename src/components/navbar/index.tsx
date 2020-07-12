@@ -1,22 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AppBar, Toolbar, Container, InputBase, Grid } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Avatar from "@material-ui/core/Avatar";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
-
-import { useStyles } from "./styles";
 import { withRouter, RouteComponentProps, Link } from "react-router-dom";
 import { RouteProps } from "react-router";
+
+import { useStyles } from "./styles";
 import {
   LOGIN,
   REGISTER,
   RESET_PASSWORD,
   PROFILE,
 } from "../../router/routes.json";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../redux/reducers";
+import { getCurrentUser } from "../../redux/actions/users/auth";
+import { IUser } from "../../models/UserModel";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const classes = useStyles();
+  const dispach = useDispatch();
+  
+  const user: IUser = useSelector((state: RootState) => state.AuthReducer.user);
+  
+  useEffect(() => {
+    dispach(getCurrentUser());
+  }, [dispach]);
 
   const _renderIcons = () => {
     return (
@@ -29,7 +40,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
           <Avatar
             className={classes.smallAvatar}
             alt="logo.png"
-            src="/images/logo.png"
+            src={user?.photoURL ? user?.photoURL : "/images/profile.png"}
           />
         </Link>
       </Grid>
@@ -57,10 +68,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const Header = () => {
     return (
       <div style={{ flexGrow: 1 }}>
-        <AppBar
-          position="static"
-          className={classes.appBar}
-        >
+        <AppBar position="static" className={classes.appBar}>
           <Container>
             <Grid container spacing={10}>
               <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
