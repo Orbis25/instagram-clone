@@ -1,3 +1,6 @@
 {
-    "users": "/users"
+    "users": "/users",
+    "storage": {
+        "profile": "/profiles/"
+    }
 }

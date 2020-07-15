@@ -10,6 +10,9 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  Paper,
 } from "@material-ui/core";
 import { Formik } from "formik";
 import { useSelector } from "react-redux";
@@ -28,6 +31,9 @@ const EditProfile = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<boolean>(false);
+  const [openUploadPicDialog, setOpenUploadPicDialog] = useState<boolean>(
+    false
+  );
   const [user, setUser] = useState<IUserEntity>({
     docId: "",
     user: {
@@ -77,9 +83,74 @@ const EditProfile = () => {
           console.log(e);
         });
       setPasswordError(false);
+    } else if (model.email === email) {
+      service
+        .update(user.docId, model, { email, password })
+        .then(() => {
+          setIsSuccessUpdate(true);
+          getUserProfile();
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+      setPasswordError(false);
     } else {
       setPasswordError(true);
     }
+  };
+
+  const UploadImage = () => {
+    const [avatar, setAvatar] = useState<any>("");
+    const [isUploading, setIsUploading] = useState<boolean>(false);
+    const handleChange = (e: any) => {
+      setAvatar(e.target.files[0]);
+    };
+
+    const uploadAvatar = () => {
+      setIsUploading(true);
+      service
+        .uploadImage(avatar, currentUser.uid)
+        ?.then(() => {
+          getUserProfile();
+          setOpenUploadPicDialog(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenUploadPicDialog(false);
+        })
+        .finally(() => {
+          setIsUploading(false);
+        });
+    };
+    return (
+      <Dialog
+        onClose={() => setOpenUploadPicDialog(false)}
+        open={openUploadPicDialog}
+        aria-labelledby="simple-dialog-title"
+      >
+        <Paper style={{ height: 400, width: 400 }}>
+          <DialogTitle id="simple-dialog-title">Upload Avatar</DialogTitle>
+          <Grid container justify="center">
+            {!isUploading ? (
+              <Grid item>
+                <input
+                  onChange={(e) => handleChange(e)}
+                  className={classes.textFields}
+                  type="file"
+                />
+                <Button onClick={uploadAvatar} className="btn-primary">
+                  Upload
+                </Button>
+              </Grid>
+            ) : (
+              <Grid item>
+                <CircularProgress size={100} />
+              </Grid>
+            )}
+          </Grid>
+        </Paper>
+      </Dialog>
+    );
   };
 
   return (
@@ -96,14 +167,25 @@ const EditProfile = () => {
           <Grid item xs={12}>
             <Grid container justify="center">
               <Grid item xs={12} sm={2} md={1} lg={1} xl={1}>
-                <Avatar alt="profile" src="/images/profile.png" />
+                <Avatar
+                  alt="profile"
+                  src={
+                    currentUser.photoURL !== null
+                      ? `${currentUser.photoURL}?t=${Date.now()}`
+                      : ""
+                  }
+                />
               </Grid>
               <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                 <Typography className={classes.userNameText}>
                   {user.user.userName}
                 </Typography>
                 <span>
-                  <b className={classes.changeProfilePhotoText}>
+                  <b
+                    onClick={() => setOpenUploadPicDialog(true)}
+                    className={classes.changeProfilePhotoText}
+                  >
+                    <UploadImage />
                     Change Profile Photo
                   </b>
                 </span>

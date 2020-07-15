@@ -70,7 +70,17 @@ export const useStyles = makeStyles((theme: Theme) =>
       background: "#fff",
       boxShadow: "none",
       border: "solid 1px #dbdbdb",
-      height: 60
+      height: 60,
+    },
+    toggleMenu: {
+      cursor: "pointer",
+    },
+    links: {
+      fontSize: 14,
+      color: "#A9A9A9 !important",
+    },
+    iconsMenu: {
+      marginRight: 15,
     },
   })
 );

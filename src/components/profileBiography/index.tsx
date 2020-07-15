@@ -42,11 +42,13 @@ const ProfileBiography = () => {
   return (
     <Grid container justify="center">
       <Grid item xs={12} sm={12} md={4} xl={4} lg={4}>
-        <Avatar
-          className={classes.avatar}
-          alt="profile"
-          src="/images/profile.png"
-        />
+        {currentUser && (
+          <Avatar
+            className={classes.avatar}
+            alt="profile"
+            src={currentUser.photoURL !== null ? currentUser.photoURL : ""}
+          />
+        )}
       </Grid>
       <Grid item xs={12} sm={12} md={8} xl={8} lg={8}>
         <Grid container spacing={1}>
@@ -82,19 +84,27 @@ const ProfileBiography = () => {
             </span>
           </Grid>
         </Grid>
-        <Typography>
-          <b>{userEntity && userEntity.user.fullName}</b>
-        </Typography>
-        <Typography>{userEntity && userEntity.user.biography}</Typography>
-        {userEntity && (
-          <a
-            href={userEntity.user.website}
-            target="_blank"
-            rel="noopener noreferrer"
+        <Grid container>
+          <Grid
+            item
+            xs={12}
+            className={classes.biograpyContainer}
           >
-            {userEntity.user.website}
-          </a>
-        )}
+            <Typography>
+              <b>{userEntity && userEntity.user.fullName}</b>
+            </Typography>
+            <Typography>{userEntity && userEntity.user.biography}</Typography>
+            {userEntity && (
+              <a
+                href={userEntity.user.website}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {userEntity.user.website}
+              </a>
+            )}
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

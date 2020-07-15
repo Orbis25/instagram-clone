@@ -5,6 +5,7 @@ import TabPanel from "../shared/tabPanel";
 import { useStyles } from "./style";
 import { TabsContent, a11yProps } from "./util";
 import EditProfile from "./EditProfile";
+import ChangePassword from "./ChangePassword";
 
 const ProfileSettings = () => {
   const classes = useStyles();
@@ -12,10 +13,6 @@ const ProfileSettings = () => {
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
-  };
-
-  const ChangePassword = () => {
-    return <div>change pass</div>;
   };
 
   return (

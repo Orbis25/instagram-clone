@@ -17,7 +17,7 @@ body {
 }
 
 .text-muted-primary {
-  color: #8e908e;
+  color: #8e908e !important;
 }
 
 .text-error {
@@ -35,4 +35,10 @@ body {
 .btn-primary {
   color: #ffffff !important;
   background: #0095F6 !important;
+}
+
+.center-image{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }

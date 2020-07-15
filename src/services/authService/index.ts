@@ -1,8 +1,10 @@
+import firebase from "firebase";
+
 import firebaseConfig from "../../firebase/index";
 import { RegisterModel, AuthModel } from "../../models/AuthModels";
 import { IUser } from "../../models/UserModel";
 import { users } from "../../firebase/colections.json";
-import firebase from "firebase";
+import { LOGIN } from "../../router/routes.json";
 
 export default class AuthService {
   /**
@@ -28,6 +30,7 @@ export default class AuthService {
   logout(): void {
     localStorage.removeItem("auth");
     firebaseConfig.auth().signOut();
+    window.location.href = LOGIN;
   }
   getCurrentUser(): Promise<firebase.User | null> {
     return new Promise((resolved, reject) => {
@@ -39,5 +42,9 @@ export default class AuthService {
         }
       });
     });
+  }
+  updatePassword(newPassword: string): Promise<void> | undefined {
+    const currentUser = firebaseConfig.auth().currentUser;
+    return currentUser?.updatePassword(newPassword);
   }
 }

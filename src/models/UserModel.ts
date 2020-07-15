@@ -16,9 +16,16 @@ export interface ICurrentUser {
   phoneNumber: string | null;
   displayName: string | null;
   emailVerified: boolean;
+  photoURL?: string | null;
 }
 
 export interface IUserEntity {
   docId: string;
   user: IUser;
+}
+
+export interface IChangePassword {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }

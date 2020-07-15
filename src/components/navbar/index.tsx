@@ -1,11 +1,26 @@
 import React, { useEffect } from "react";
-import { AppBar, Toolbar, Container, InputBase, Grid } from "@material-ui/core";
+import {
+  AppBar,
+  Toolbar,
+  Container,
+  InputBase,
+  Grid,
+  MenuItem,
+  Popper,
+  Paper,
+  ClickAwayListener,
+  Grow,
+  MenuList,
+} from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Avatar from "@material-ui/core/Avatar";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 import { withRouter, RouteComponentProps, Link } from "react-router-dom";
 import { RouteProps } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import SettingsIcon from "@material-ui/icons/Settings";
 
 import { useStyles } from "./styles";
 import {
@@ -13,36 +28,149 @@ import {
   REGISTER,
   RESET_PASSWORD,
   PROFILE,
+  EDIT_PROFILE,
+  HOME,
 } from "../../router/routes.json";
-import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import { getCurrentUser } from "../../redux/actions/users/auth";
 import { IUser } from "../../models/UserModel";
+import AuthService from "../../services/authService";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
+  const service = new AuthService();
   const classes = useStyles();
   const dispach = useDispatch();
-  
+
   const user: IUser = useSelector((state: RootState) => state.AuthReducer.user);
-  
+
   useEffect(() => {
     dispach(getCurrentUser());
   }, [dispach]);
 
-  const _renderIcons = () => {
+  function ProfileAvatar() {
+    const [open, setOpen] = React.useState(false);
+    const anchorRef = React.useRef<HTMLButtonElement>(null);
+
+    const handleToggle = () => {
+      setOpen((prevOpen) => !prevOpen);
+    };
+
+    const handleClose = (event: React.MouseEvent<EventTarget>) => {
+      if (
+        anchorRef.current &&
+        anchorRef.current.contains(event.target as HTMLElement)
+      ) {
+        return;
+      }
+
+      setOpen(false);
+    };
+
+    function handleListKeyDown(event: React.KeyboardEvent) {
+      if (event.key === "Tab") {
+        event.preventDefault();
+        setOpen(false);
+      }
+    }
+
+    const logout = () => {
+      service.logout();
+    };
+
+    // return focus to the button when we transitioned from !open -> open
+    const prevOpen = React.useRef(open);
+    React.useEffect(() => {
+      if (prevOpen.current === true && open === false) {
+        anchorRef.current!.focus();
+      }
+
+      prevOpen.current = open;
+    }, [open]);
+
     return (
-      <Grid className={classes.appSectionIcons} item xs={4}>
-        <HomeOutlinedIcon className={classes.iconColor} />
-        <FavoriteBorderIcon
-          className={`${classes.iconColor} ${classes.inconleft}`}
-        />
-        <Link to={PROFILE}>
+      <div>
+        <span
+          className={classes.toggleMenu}
+          ref={anchorRef}
+          aria-controls={open ? "menu-list-grow" : undefined}
+          aria-haspopup="true"
+          onClick={handleToggle}
+        >
           <Avatar
             className={classes.smallAvatar}
             alt="logo.png"
-            src={user?.photoURL ? user?.photoURL : "/images/profile.png"}
+            src={user?.photoURL && `${user?.photoURL}?t=${Date.now()}`}
           />
+        </span>
+        <Popper
+          open={open}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === "bottom" ? "center top" : "center bottom",
+              }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={handleClose}>
+                  <MenuList
+                    autoFocusItem={open}
+                    id="menu-list-grow"
+                    onKeyDown={handleListKeyDown}
+                  >
+                    <MenuItem className={classes.links} onClick={handleClose}>
+                      <AccountCircleIcon className={classes.iconsMenu} />
+                      <Link
+                        className="no-text-decoration text-muted-primary"
+                        to={PROFILE}
+                      >
+                        Profile
+                      </Link>
+                    </MenuItem>
+                    <MenuItem className={classes.links} onClick={handleClose}>
+                      <SettingsIcon className={classes.iconsMenu} />
+                      <Link
+                        className="no-text-decoration  text-muted-primary"
+                        to={EDIT_PROFILE}
+                      >
+                        Configuration
+                      </Link>
+                    </MenuItem>
+                    <MenuItem
+                      className={classes.links}
+                      onClick={(event) => {
+                        handleClose(event);
+                        logout();
+                      }}
+                    >
+                      Logout
+                    </MenuItem>
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </div>
+    );
+  }
+
+  const _renderIcons = () => {
+    return (
+      <Grid className={classes.appSectionIcons} item xs={4}>
+        <Link to={HOME}>
+          <HomeOutlinedIcon className={classes.iconColor} />
         </Link>
+        <FavoriteBorderIcon
+          className={`${classes.iconColor} ${classes.inconleft}`}
+        />
+        <ProfileAvatar />
       </Grid>
     );
   };

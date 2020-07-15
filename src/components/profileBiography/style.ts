@@ -23,5 +23,11 @@ export const useStyles = makeStyles((theme: Theme) =>
     quantitySection: {
       marginRight: 50,
     },
+    biograpyContainer: {
+      width: 100,
+      overflow: "hidden",
+      wordBreak: "break-all",
+      whiteSpace: "normal",
+    },
   })
 );

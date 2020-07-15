@@ -15,7 +15,10 @@ import { Redirect, Link } from "react-router-dom";
 import { primary } from "../../utils/colors.json";
 import { useStyles } from "./styles";
 import { AuthModel } from "../../models/AuthModels";
-import { authenticatedUser } from "../../redux/actions/users/auth";
+import {
+  authenticatedUser,
+  getCurrentUser,
+} from "../../redux/actions/users/auth";
 import validationScheme from "./validationSchema";
 import { RootState } from "../../redux/reducers";
 import { RESET_PASSWORD } from "../../router/routes.json";
@@ -35,6 +38,10 @@ const AuthForm = () => {
   const handlerLogin = (values: AuthModel): void => {
     setIsLoading(true);
     dispach(authenticatedUser(values));
+    setTimeout(() => {
+      dispach(getCurrentUser());
+      setIsLoading(false);
+    }, 2000);
   };
 
   return (
