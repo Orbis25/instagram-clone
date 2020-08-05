@@ -9,6 +9,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     userName: {
       fontSize: 28,
       fontWeight: "normal",
+      marginRight: 10,
     },
     btnEdit: {
       marginLeft: 20,

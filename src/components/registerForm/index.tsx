@@ -17,6 +17,7 @@ import { LOGIN } from "../../router/routes.json";
 import { RegisterModel } from "../../models/AuthModels";
 import ValidationSchema from "./validationsForm";
 import AuthService from "../../services/authService";
+import UserService from "../../services/userService";
 import { useHistory } from "react-router-dom";
 
 const RegisterForm = () => {
@@ -32,34 +33,41 @@ const RegisterForm = () => {
     userName: "",
   };
 
-  const handlerSubmit = (values: RegisterModel) => {
+  const handlerSubmit = async (values: RegisterModel) => {
     setIsLoading(true);
     const service = new AuthService();
-    service
-      .createUser(values)
-      .then(({ user }) => {
-        service
-          .addUserDetail({
-            uidUser: user?.uid,
-            email: values.email,
-            fullName: values.fullName,
-            userName: values.fullName,
-            biography: "",
-            gender: "Male",
-            phoneNumber: "",
-            photoURL: "",
-            website: "",
-          })
-          .then(() => {
-            history.push(LOGIN);
-          });
-      })
-      .catch((error) => {
-        setIsErrorMessage(error.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    const userService = new UserService();
+    const result = await userService.getUserByUserName(values.userName);
+    if (result.empty) {
+      service
+        .createUser(values)
+        .then(({ user }) => {
+          service
+            .addUserDetail({
+              uidUser: user?.uid,
+              email: values.email,
+              fullName: values.fullName,
+              userName: values.fullName,
+              biography: "",
+              gender: "Male",
+              phoneNumber: "",
+              photoURL: "",
+              website: "",
+            })
+            .then(() => {
+              history.push(LOGIN);
+            });
+        })
+        .catch((error) => {
+          setIsErrorMessage(error.message);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
+      setIsErrorMessage("This username was taken!");
+    }
   };
 
   const HaveAccount = () => {

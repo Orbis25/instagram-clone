@@ -34,11 +34,15 @@ body {
 
 .btn-primary {
   color: #ffffff !important;
-  background: #0095F6 !important;
+  background: #0095f6 !important;
 }
 
-.center-image{
+.center-image {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.PrivateTabIndicator-colorSecondary-24 {
+  background-color: black !important;
 }

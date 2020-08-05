@@ -1,6 +1,12 @@
 {
     "users": "/users",
+    "posts": "/posts",
+    "commentsPost":"/commentsPost",
+    "userPosts": "/userPosts",
+    "following": "/following",
+    "userFollowing": "/userFollowing",
     "storage": {
-        "profile": "/profiles/"
+        "profile": "/profiles/",
+        "posts": "/posts/"
     }
 }

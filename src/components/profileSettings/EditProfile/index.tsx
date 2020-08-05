@@ -59,7 +59,7 @@ const EditProfile = () => {
   }, [currentUser]);
 
   const getUserProfile = () => {
-    service.getUserDetail(currentUser.uid).then((querySnapshot) => {
+    service.getUserDetailByUid(currentUser.uid).then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const result = doc.data() as IUser;
         setEmail(result.email);
@@ -109,7 +109,7 @@ const EditProfile = () => {
     const uploadAvatar = () => {
       setIsUploading(true);
       service
-        .uploadImage(avatar, currentUser.uid)
+        .uploadImage(avatar, currentUser.uid, user.docId)
         ?.then(() => {
           getUserProfile();
           setOpenUploadPicDialog(false);

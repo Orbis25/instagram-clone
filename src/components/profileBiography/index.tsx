@@ -1,34 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Typography, Button, Avatar } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
+import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
+import { RootState } from "../../redux/reducers/";
 import { useStyles } from "./style";
-import { ICurrentUser, IUserEntity, IUser } from "../../models/UserModel";
-import { RootState } from "../../redux/reducers";
+import { IUserEntity, IUser, ICurrentUser } from "../../models/UserModel";
 import UserService from "../../services/userService";
 import routes from "../../router/routes.json";
 
 const ProfileBiography = () => {
+  const [userEntity, setUserEntity] = useState<IUserEntity | null>(null);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const { userName } = useParams();
   const classes = useStyles();
   const service = new UserService();
-
-  const [userEntity, setUserEntity] = useState<IUserEntity | null>(null);
 
   const currentUser: ICurrentUser = useSelector(
     (state: RootState) => state.AuthReducer.user
   );
 
+  //console.log(userEntity);
+
   useEffect(() => {
-    if (currentUser) {
+    if (userName) {
       getUserProfile();
     }
+
+    if (userEntity?.docId !== null && currentUser) {
+      imFollowing();
+    }
+
     // eslint-disable-next-line
-  }, [currentUser]);
+  }, [userName, userEntity?.docId, currentUser]);
 
   const getUserProfile = () => {
-    service.getUserDetail(currentUser.uid).then((querySnapshot) => {
+    service.getUserDetail(userName).then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const result = doc.data() as IUser;
         setUserEntity({
@@ -39,33 +47,92 @@ const ProfileBiography = () => {
     });
   };
 
+  const follow = () => {
+    if (userEntity?.user !== undefined) {
+      service.followUser(currentUser.uid, userEntity.user.uidUser).then(() => {
+        setIsFollowing(true);
+      });
+    }
+  };
+
+  const unFollow = () => {
+    if (userEntity?.user !== undefined) {
+      service.unFollowUser(currentUser.uid, userEntity.user.uidUser).then(() => {
+        setIsFollowing(false);
+      });
+    }
+  };
+
+  const imFollowing = async () => {
+    if (userEntity?.user.uidUser !== undefined) {
+      const result = await service.imFollow(
+        currentUser.uid,
+        userEntity.user.uidUser
+      );
+      if (result.empty) {
+        setIsFollowing(false);
+      } else {
+        setIsFollowing(true);
+      }
+    }
+  };
+
+  const _renderFollowButtons = () => {
+    if (isFollowing) {
+      return (
+        <Button
+          onClick={unFollow}
+          variant="contained"
+          size="small"
+        >
+          Unfollow
+        </Button>
+      );
+    } else {
+      return (
+        <Button onClick={follow} className="btn-primary" size="small">
+          Follow
+        </Button>
+      );
+    }
+  };
+
   return (
     <Grid container justify="center">
       <Grid item xs={12} sm={12} md={4} xl={4} lg={4}>
-        {currentUser && (
+        {userEntity && (
           <Avatar
             className={classes.avatar}
             alt="profile"
-            src={currentUser.photoURL !== null ? currentUser.photoURL : ""}
+            src={userEntity.user.photoURL}
           />
         )}
       </Grid>
       <Grid item xs={12} sm={12} md={8} xl={8} lg={8}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            <Typography className={classes.userName}>
+            <Typography>
               {userEntity ? (
                 <span>
-                  {userEntity.user.userName}
-                  <Link className="no-text-decoration" to={routes.EDIT_PROFILE}>
-                    <Button
-                      className={classes.btnEdit}
-                      size="small"
-                      variant="outlined"
+                  <span className={classes.userName}>
+                    {userEntity.user.userName}
+                  </span>
+                  {userEntity.user.email === currentUser.email ? (
+                    <Link
+                      className="no-text-decoration"
+                      to={routes.EDIT_PROFILE}
                     >
-                      Edit profile
-                    </Button>
-                  </Link>
+                      <Button
+                        className={classes.btnEdit}
+                        size="small"
+                        variant="outlined"
+                      >
+                        Edit profile
+                      </Button>
+                    </Link>
+                  ) : (
+                    _renderFollowButtons()
+                  )}
                 </span>
               ) : (
                 <Skeleton animation="wave" variant="text" />
@@ -85,11 +152,7 @@ const ProfileBiography = () => {
           </Grid>
         </Grid>
         <Grid container>
-          <Grid
-            item
-            xs={12}
-            className={classes.biograpyContainer}
-          >
+          <Grid item xs={12} className={classes.biograpyContainer}>
             <Typography>
               <b>{userEntity && userEntity.user.fullName}</b>
             </Typography>

@@ -1,6 +1,7 @@
 {
     "HOME": "/",
-    "PROFILE": "/profile/",
+    "PROFILE": "/profile/:userName",
+    "GO_PROFILE": "/profile",
     "POST": "/post/:id",
     "LOGIN": "/login",
     "REGISTER": "/register",

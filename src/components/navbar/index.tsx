@@ -11,6 +11,7 @@ import {
   ClickAwayListener,
   Grow,
   MenuList,
+  Divider,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
@@ -27,13 +28,13 @@ import {
   LOGIN,
   REGISTER,
   RESET_PASSWORD,
-  PROFILE,
+  GO_PROFILE,
   EDIT_PROFILE,
   HOME,
 } from "../../router/routes.json";
 import { RootState } from "../../redux/reducers";
 import { getCurrentUser } from "../../redux/actions/users/auth";
-import { IUser } from "../../models/UserModel";
+import { ICurrentUser } from "../../models/UserModel";
 import AuthService from "../../services/authService";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
@@ -41,7 +42,9 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const classes = useStyles();
   const dispach = useDispatch();
 
-  const user: IUser = useSelector((state: RootState) => state.AuthReducer.user);
+  const user: ICurrentUser = useSelector(
+    (state: RootState) => state.AuthReducer.user
+  );
 
   useEffect(() => {
     dispach(getCurrentUser());
@@ -96,11 +99,13 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
           aria-haspopup="true"
           onClick={handleToggle}
         >
-          <Avatar
-            className={classes.smallAvatar}
-            alt="logo.png"
-            src={user?.photoURL && `${user?.photoURL}?t=${Date.now()}`}
-          />
+          {user?.photoURL !== undefined && (
+            <Avatar
+              className={classes.smallAvatar}
+              alt="logo.png"
+              src={`${user?.photoURL}?t=${Date.now()}`}
+            />
+          )}
         </span>
         <Popper
           open={open}
@@ -128,7 +133,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
                       <AccountCircleIcon className={classes.iconsMenu} />
                       <Link
                         className="no-text-decoration text-muted-primary"
-                        to={PROFILE}
+                        to={`${GO_PROFILE}/${user.displayName}`}
                       >
                         Profile
                       </Link>
@@ -142,6 +147,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
                         Configuration
                       </Link>
                     </MenuItem>
+                    <Divider />
                     <MenuItem
                       className={classes.links}
                       onClick={(event) => {

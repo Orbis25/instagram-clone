@@ -1,22 +1,34 @@
 import firebaseConfig from "../../firebase/";
-import collections from "../../firebase/colections.json";
 import firebase from "firebase";
 
 import { IUser } from "../../models/UserModel";
 import { AuthModel } from "../../models/AuthModels";
 import AuthService from "../authService/";
-import { storage } from "../../firebase/colections.json";
+import collections, { storage } from "../../firebase/colections.json";
 
 export default class UserService {
+  db = firebaseConfig.firestore();
   getUserDetail(
-    uidUser: string
+    userName: string
   ): Promise<
     firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
   > {
     return firebaseConfig
       .firestore()
       .collection(collections.users)
-      .where("uidUser", "==", uidUser)
+      .where("userName", "==", userName)
+      .get();
+  }
+
+  getUserDetailByUid(
+    uid: string
+  ): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return firebaseConfig
+      .firestore()
+      .collection(collections.users)
+      .where("uidUser", "==", uid)
       .get();
   }
 
@@ -37,16 +49,28 @@ export default class UserService {
     return db.collection(collections.users).doc(docId).update(model);
   }
 
-  private updateProfileImage(photoUrl: string): Promise<void> | undefined {
+  private updateProfileImage(
+    photoUrl: string,
+    docId: string
+  ): Promise<void> | undefined {
     const currentUser = firebaseConfig.auth().currentUser;
-    return currentUser?.updateProfile({
-      photoURL: photoUrl,
-    });
+    return this.db
+      .collection(collections.users)
+      .doc(docId)
+      .update({
+        photoURL: photoUrl,
+      })
+      .then(() => {
+        return currentUser?.updateProfile({
+          photoURL: photoUrl,
+        });
+      });
   }
 
   uploadImage(
     file: Blob | Uint8Array | ArrayBuffer | any,
-    title: string
+    title: string,
+    docId: string
   ): Promise<void> | undefined {
     const stg = firebaseConfig.storage();
     const ref = stg.ref(storage.profile).child(title);
@@ -58,8 +82,71 @@ export default class UserService {
         .child(title)
         .getDownloadURL()
         .then((result) => {
-          return this.updateProfileImage(result);
+          return this.updateProfileImage(result, docId);
         });
     });
+  }
+
+  getUserByUserName(
+    userName: string
+  ): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return firebaseConfig
+      .firestore()
+      .collection(collections.users)
+      .where("userName", "==", userName)
+      .get();
+  }
+  getAllSuggestions(): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return this.db.collection(collections.users).limit(5).get();
+  }
+  getAll(): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return this.db.collection(collections.users).get();
+  }
+  followUser(currentUid: string, userIdToFollow: string | null | undefined) {
+    return this.db
+      .collection(collections.following)
+      .doc(currentUid)
+      .collection(collections.userFollowing)
+      .doc()
+      .set({ uid: userIdToFollow });
+  }
+  async unFollowUser(
+    currentUid: string,
+    userIdToUnFolloe: string | null | undefined
+  ) {
+    const result = this.db
+      .collection(collections.following)
+      .doc(currentUid)
+      .collection(collections.userFollowing)
+      .where("uid", "==", userIdToUnFolloe)
+      .get();
+
+    (await result).docs.forEach((value) => {
+      this.db
+        .collection(collections.following)
+        .doc(currentUid)
+        .collection(collections.userFollowing)
+        .doc(value.id)
+        .delete();
+    });
+  }
+  imFollow(
+    currentUid: string,
+    userIdToFollow: string | null | undefined
+  ): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return this.db
+      .collection(collections.following)
+      .doc(currentUid)
+      .collection(collections.userFollowing)
+      .where("uid", "==", userIdToFollow)
+      .get();
   }
 }
