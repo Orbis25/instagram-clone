@@ -21,5 +21,5 @@ export const routes: RouteType[] = [
   {
     path: EDIT_PROFILE,
     component: EditProfilePage,
-  },
+  }
 ];

@@ -1,7 +1,9 @@
 {
     "users": "/users",
     "posts": "/posts",
-    "commentsPost":"/commentsPost",
+    "commentsPost": "/commentsPost",
+    "LikesPosts": "/likesPost",
+    "savedPosts": "/savedPost",
     "userPosts": "/userPosts",
     "following": "/following",
     "userFollowing": "/userFollowing",

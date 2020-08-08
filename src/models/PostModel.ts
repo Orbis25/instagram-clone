@@ -1,6 +1,7 @@
 import { ICurrentUser } from "./UserModel";
 
 export interface IPost {
+  postId: string;
   firebaseId: string | null;
   text: string | null;
   images: string[];
@@ -9,8 +10,15 @@ export interface IPost {
 }
 
 export interface IComment {
+  userId: string;
   postId: string;
-  userName: string;
   comment: string;
   createdAt: Date;
 }
+
+export interface ILikePost {
+  userId: string;
+  postId: string;
+}
+
+export interface ISavedPost extends ILikePost {}

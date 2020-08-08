@@ -1,6 +1,6 @@
 import firebaseConfig from "../../firebase";
 import collections, { storage } from "../../firebase/colections.json";
-import { IPost, IComment } from "../../models/PostModel";
+import { IPost, IComment, ILikePost, ISavedPost } from "../../models/PostModel";
 
 export default class PostService {
   db = firebaseConfig.firestore();
@@ -55,6 +55,7 @@ export default class PostService {
       .doc(uid)
       .collection(collections.userPosts)
       .where("user.uid", "==", uid)
+      .orderBy("createdAt", "desc")
       .get();
   }
   async addComment(comment: IComment): Promise<void> {
@@ -71,7 +72,96 @@ export default class PostService {
     return await this.db
       .collection(collections.commentsPost)
       .where("postId", "==", postId)
-      .orderBy("createdAt","desc").limit(2)
+      .orderBy("createdAt", "desc")
+      .limit(2)
       .get();
+  }
+  async getAllComments(
+    postId: string
+  ): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return await this.db
+      .collection(collections.commentsPost)
+      .where("postId", "==", postId)
+      .orderBy("createdAt", "asc")
+      .get();
+  }
+
+  async getPost(
+    id: string,
+    userUid: string
+  ): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return await this.db
+      .collection(collections.posts)
+      .doc(userUid)
+      .collection(collections.userPosts)
+      .where("postId", "==", id)
+      .get();
+  }
+
+  async addLike(model: ILikePost): Promise<void> {
+    return await this.db.collection(collections.LikesPosts).doc().set(model);
+  }
+
+  async checkLike(model: ILikePost): Promise<boolean> {
+    return await this.db
+      .collection(collections.LikesPosts)
+      .where("userId", "==", model.userId)
+      .where("postId", "==", model.postId)
+      .get()
+      .then((result) => {
+        return result.empty;
+      });
+  }
+
+  async removeLike(model: ILikePost): Promise<boolean> {
+    return await this.db
+      .collection(collections.LikesPosts)
+      .where("userId", "==", model.userId)
+      .where("postId", "==", model.postId)
+      .get()
+      .then((result) => {
+        result.forEach(async (value) => {
+          return await this.db
+            .collection(collections.LikesPosts)
+            .doc(value.id)
+            .delete();
+        });
+        return false;
+      });
+  }
+
+  async savePost(model: ISavedPost): Promise<void> {
+    return await this.db.collection(collections.savedPosts).doc().set(model);
+  }
+
+  async checkPostsaved(model: ISavedPost): Promise<boolean> {
+    return await this.db
+      .collection(collections.savedPosts)
+      .where("userId", "==", model.userId)
+      .where("postId", "==", model.postId)
+      .get()
+      .then((result) => {
+        return !result.empty;
+      });
+  }
+  async removeSavedPost(model: ISavedPost): Promise<boolean> {
+    return await this.db
+      .collection(collections.savedPosts)
+      .where("userId", "==", model.userId)
+      .where("postId", "==", model.postId)
+      .get()
+      .then((result) => {
+        result.forEach(async (value) => {
+          return await this.db
+            .collection(collections.savedPosts)
+            .doc(value.id)
+            .delete();
+        });
+        return false;
+      });
   }
 }

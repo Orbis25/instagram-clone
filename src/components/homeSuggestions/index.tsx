@@ -98,6 +98,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
       const service = new PostService();
       if (userToPublication !== null) {
         const model: IPost = {
+          postId: `${Date.now()}-${user.uid}`,
           firebaseId: null,
           createdAt: new Date(),
           images: images,

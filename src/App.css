@@ -13,7 +13,7 @@ body {
 }
 
 .text-center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .text-muted-primary {
@@ -37,6 +37,10 @@ body {
   background: #0095f6 !important;
 }
 
+.text-primary {
+  color: #0095f6 !important;
+}
+
 .center-image {
   display: block;
   margin-left: auto;
@@ -45,4 +49,21 @@ body {
 
 .PrivateTabIndicator-colorSecondary-24 {
   background-color: black !important;
+}
+
+.text-link {
+  color: black !important;
+}
+
+div > ::-webkit-scrollbar {
+  background: rgba(255, 255, 255, 0) !important;
+}
+
+.image-post {
+  height: 730px !important;
+  width: 100% !important;
+}
+
+.Carousel-indicators-24 {
+  display: none !important;
 }

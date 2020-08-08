@@ -6,18 +6,14 @@ import {
   CardHeader,
   Divider,
   CardMedia,
-  CardActions,
   Typography,
   TextField,
   Grid,
   Button,
+  CircularProgress,
 } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
-import TelegramIcon from "@material-ui/icons/Telegram";
-import TurnedInNotIcon from "@material-ui/icons/TurnedInNot";
 import Carousel from "react-material-ui-carousel";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -25,21 +21,28 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import { useStyles } from "./style";
 import { IPost } from "../../models/PostModel";
-import { GO_PROFILE } from "../../router/routes.json";
+import { GO_PROFILE, GO_POST } from "../../router/routes.json";
 import { ICurrentUser, IUser } from "../../models/UserModel";
 import { IComment } from "../../models/PostModel";
 import PostService from "../../services/postService";
 import UserService from "../../services/userService";
+import { formatDate } from "../../helpers/dateTimeHelper";
+import CommentList from "./commentList";
+import PostActions from "../postActions";
+import OptionsPost from "./optionsPost";
 
 type Props = {
   post: IPost;
 };
 
 const Post: React.FC<Props> = ({ post }) => {
-  const { user, text, images, firebaseId } = post;
+  const { user, text, images, postId, createdAt } = post;
   const [comments, setComments] = useState<IComment[]>([]);
-  const [comment, setComment] = useState<string | null>(null);
+  const [comment, setComment] = useState<string>("");
   const [userLogged, setUserLogged] = useState<IUser | null>(null);
+  const [userPosted, setUserPosted] = useState<string>("");
+  const [isLoadingComment, setIsLoadingComment] = useState<boolean>(false);
+  const [isOpenOptions, setIsOpenOptions] = useState<boolean>(false);
 
   const service = new PostService();
   const userService = new UserService();
@@ -50,15 +53,19 @@ const Post: React.FC<Props> = ({ post }) => {
   );
 
   useEffect(() => {
-    if (firebaseId) {
-      getComments(firebaseId);
+    if (postId) {
+      getComments(postId);
     }
 
     if (currentUser?.uid) {
       getUserLogged(currentUser.uid);
     }
+
+    if (user) {
+      getUserNamePosted();
+    }
     // eslint-disable-next-line
-  }, [firebaseId, currentUser.uid]);
+  }, [postId, currentUser.uid, user]);
 
   const getUserLogged = (uid: string) => {
     userService.getUserDetailByUid(uid).then((result) => {
@@ -79,39 +86,47 @@ const Post: React.FC<Props> = ({ post }) => {
   };
 
   const handleSubmitComment = () => {
-    if (comment && userLogged !== null && firebaseId) {
+    if (
+      comment &&
+      userLogged !== null &&
+      postId &&
+      userLogged?.uidUser !== undefined &&
+      userLogged?.uidUser !== null
+    ) {
+      setIsLoadingComment(true);
+
       const commentPost: IComment = {
-        postId: firebaseId,
+        userId: userLogged.uidUser,
+        postId: post.postId,
         comment: comment,
-        userName: userLogged.userName,
         createdAt: new Date(),
       };
       service
         .addComment(commentPost)
         .then(() => {
           setComment("");
-          getComments(firebaseId);
+          getComments(postId);
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          setIsLoadingComment(false);
         });
     }
   };
 
-  const _renderComments = () => {
-    return comments.map(({ userName, comment }, index) => (
-      <Typography key={index} className={classes.textPost}>
-        <Link
-          className="no-text-decoration"
-          style={{ color: "black", marginRight: 8 }}
-          to={`${GO_PROFILE}/${userName}`}
-        >
-          <b>{userName}</b>
-        </Link>
+  const getUserNamePosted = () => {
+    userService.getUserDetailByUid(user.uid).then((result) => {
+      result.forEach((value) => {
+        const { userName } = value.data() as IUser;
+        setUserPosted(userName);
+      });
+    });
+  };
 
-        {comment}
-      </Typography>
-    ));
+  const handleOpenOptions = () => {
+    setIsOpenOptions(true);
   };
 
   return (
@@ -131,15 +146,23 @@ const Post: React.FC<Props> = ({ post }) => {
             className="no-text-decoration"
             style={{ color: "black" }}
           >
-            <b>{user.displayName}</b>
+            <b>{userPosted}</b>
           </Link>
         }
         action={
-          <IconButton aria-label="options">
+          <IconButton onClick={handleOpenOptions} aria-label="options">
             <MoreVertIcon />
           </IconButton>
         }
       ></CardHeader>
+
+      <OptionsPost
+        postId={postId}
+        userId={user.uid}
+        isOpen={isOpenOptions}
+        handleCloseOptions={setIsOpenOptions}
+      />
+
       <Divider />
 
       {images.length <= 1 ? (
@@ -152,6 +175,7 @@ const Post: React.FC<Props> = ({ post }) => {
         <Carousel autoPlay={false}>
           {images.map((value: string, index) => (
             <img
+              key={index}
               style={{ width: "100%" }}
               className={classes.imagePost}
               src={value}
@@ -161,37 +185,42 @@ const Post: React.FC<Props> = ({ post }) => {
         </Carousel>
       )}
 
-      <CardActions disableSpacing>
-        <IconButton>
-          <FavoriteBorderIcon />
-        </IconButton>
-        <IconButton>
-          <ChatBubbleOutlineIcon />
-        </IconButton>
-        <IconButton>
-          <TelegramIcon />
-        </IconButton>
-        <IconButton className={classes.iconSave}>
-          <TurnedInNotIcon />
-        </IconButton>
-      </CardActions>
+      <PostActions postId={postId} userId={currentUser.uid} />
+
       <CardContent>
         <div className={classes.textPost}>
           <Typography className={classes.textPost}>
             <Link
               className="no-text-decoration"
               style={{ color: "black", marginRight: 8 }}
-              to={`${GO_PROFILE}/${user.displayName}`}
+              to={`${GO_PROFILE}/${userPosted}`}
             >
-              <b>{user.displayName} </b>
+              <b>{userPosted} </b>
             </Link>
             {text}
           </Typography>
-          <p>
-            <b className="text-muted-primary">See all comments</b>
-          </p>
+          <Link
+            className="no-text-decoration"
+            style={{ color: "black", marginRight: 8 }}
+            to={`${GO_POST}/${postId}/${user.uid}`}
+          >
+            <p>
+              <b className="text-muted-primary">See all comments</b>
+            </p>
+          </Link>
         </div>
-        <div className={classes.textPost}>{_renderComments()}</div>
+        <div className={classes.textPost}>
+          {comments.map((value, index) => (
+            <CommentList
+              userId={value.userId}
+              key={index}
+              comment={value.comment}
+            />
+          ))}
+          <br />
+          <span className="text-muted-primary">{formatDate(createdAt)}</span>
+        </div>
+        <br />
         <Divider />
         <Grid container className={classes.inputCommentContainer}>
           <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
@@ -205,15 +234,27 @@ const Post: React.FC<Props> = ({ post }) => {
               placeholder="Add comment"
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-            <Button
-              disabled={comment ? false : true}
-              fullWidth
-              onClick={handleSubmitComment}
-              className={classes.btnComment}
-            >
-              Public
-            </Button>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={2}
+            lg={2}
+            xl={2}
+            className="text-center"
+          >
+            {isLoadingComment ? (
+              <CircularProgress size={30} />
+            ) : (
+              <Button
+                disabled={comment ? false : true}
+                fullWidth
+                onClick={handleSubmitComment}
+                className={classes.btnComment}
+              >
+                Public
+              </Button>
+            )}
           </Grid>
         </Grid>
       </CardContent>
