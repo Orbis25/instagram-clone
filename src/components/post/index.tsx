@@ -185,7 +185,7 @@ const Post: React.FC<Props> = ({ post }) => {
         </Carousel>
       )}
 
-      <PostActions postId={postId} userId={currentUser.uid} />
+      <PostActions postId={postId} userId={user.uid} />
 
       <CardContent>
         <div className={classes.textPost}>

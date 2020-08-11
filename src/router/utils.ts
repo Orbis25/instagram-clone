@@ -1,8 +1,9 @@
 import PostPage from "../pages/post";
 import ProfilePage from "../pages/profile";
 import EditProfilePage from "../pages/editProfile";
+import SuggedtedPage from "../pages/seeAll";
 
-import { PROFILE, POST, EDIT_PROFILE } from "./routes.json";
+import { PROFILE, POST, EDIT_PROFILE, SUGGEDTED } from "./routes.json";
 
 interface RouteType {
   path: string;
@@ -21,5 +22,9 @@ export const routes: RouteType[] = [
   {
     path: EDIT_PROFILE,
     component: EditProfilePage,
-  }
+  },
+  {
+    path: SUGGEDTED,
+    component: SuggedtedPage,
+  },
 ];

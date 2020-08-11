@@ -5,6 +5,9 @@ import {
   GET_CURRENTUSER_START,
   GET_CURRENTUSER_ERROR,
   GET_CURRENTUSER_SUCCESS,
+  USER_AUTHENTICATED_START_FB,
+  USER_AUTHENTICATED_SUCCESS_FB,
+  USER_AUTHENTICATED_ERROR_FB,
 } from "../../../consts/userActionTypes";
 import { IAuthReducer } from "./types";
 
@@ -25,6 +28,18 @@ export default function (state = initialState, action: any) {
         isAutenticated: false,
         errorMessage: action.error?.message,
       };
+
+    case USER_AUTHENTICATED_START_FB:
+      return { ...state };
+    case USER_AUTHENTICATED_SUCCESS_FB:
+      return { ...state, isAutenticated: true, errorMessage: null };
+    case USER_AUTHENTICATED_ERROR_FB:
+      return {
+        ...state,
+        isAutenticated: false,
+        errorMessage: action.error?.message,
+      };
+
     case GET_CURRENTUSER_START:
       return { ...state };
     case GET_CURRENTUSER_SUCCESS:

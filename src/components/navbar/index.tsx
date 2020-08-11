@@ -17,6 +17,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Avatar from "@material-ui/core/Avatar";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
+import ExploreOutlinedIcon from "@material-ui/icons/ExploreOutlined";
 import { withRouter, RouteComponentProps, Link } from "react-router-dom";
 import { RouteProps } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
@@ -34,10 +35,12 @@ import {
 } from "../../router/routes.json";
 import { RootState } from "../../redux/reducers";
 import { getCurrentUser } from "../../redux/actions/users/auth";
-import { ICurrentUser } from "../../models/UserModel";
+import { ICurrentUser, IUser } from "../../models/UserModel";
 import AuthService from "../../services/authService";
+import UserService from "../../services/userService";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
+  const [userCurrent, setUserCurrent] = React.useState<IUser | null>(null);
   const service = new AuthService();
   const classes = useStyles();
   const dispach = useDispatch();
@@ -48,7 +51,19 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
 
   useEffect(() => {
     dispach(getCurrentUser());
-  }, [dispach]);
+    if (user?.uid) {
+      getUser();
+    }
+    // eslint-disable-next-line
+  }, [dispach, user?.uid]);
+
+  const getUser = () => {
+    new UserService().getUserDetailByUid(user.uid).then((result) => {
+      result.forEach((val) => {
+        setUserCurrent(val.data() as IUser);
+      });
+    });
+  };
 
   function ProfileAvatar() {
     const [open, setOpen] = React.useState(false);
@@ -133,7 +148,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
                       <AccountCircleIcon className={classes.iconsMenu} />
                       <Link
                         className="no-text-decoration text-muted-primary"
-                        to={`${GO_PROFILE}/${user.displayName}`}
+                        to={`${GO_PROFILE}/${userCurrent?.userName}`}
                       >
                         Profile
                       </Link>
@@ -173,6 +188,9 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
         <Link to={HOME}>
           <HomeOutlinedIcon className={classes.iconColor} />
         </Link>
+        <ExploreOutlinedIcon
+          className={`${classes.iconColor} ${classes.inconleft}`}
+        />
         <FavoriteBorderIcon
           className={`${classes.iconColor} ${classes.inconleft}`}
         />

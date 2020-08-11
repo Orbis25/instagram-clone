@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Container } from "@material-ui/core";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import { RootState } from "../../redux/reducers";
@@ -11,6 +11,8 @@ import UserService from "../../services/userService";
 import Suggestions from "../../components/homeSuggestions";
 import PostService from "../../services/postService";
 import { IPost } from "../../models/PostModel";
+import { getCurrentUser } from "../../redux/actions/users/auth";
+import NoFeed from "../../components/noFeed";
 
 const HomePage = () => {
   const [user, setUser] = useState<IUser | null>(null);
@@ -19,11 +21,13 @@ const HomePage = () => {
   const service = new UserService();
   const postService = new PostService();
   const classes = useStyles();
+  const dispach = useDispatch();
   const currentUser: ICurrentUser = useSelector(
     (state: RootState) => state.AuthReducer.user
   );
 
   useEffect(() => {
+    dispach(getCurrentUser());
     if (currentUser) {
       getUserDetail();
       getAllUsers();
@@ -41,6 +45,7 @@ const HomePage = () => {
   };
 
   const getAllUsers = () => {
+    setUsers([]);
     service.getAllSuggestions().then((result) => {
       result.docs.forEach((values) => {
         const result = values.data() as IUser;
@@ -73,9 +78,12 @@ const HomePage = () => {
   };
 
   const _renderPosts = () => {
-    return post.map((value, index) => <Post post={value} key={index} />);
+    return post.length ? (
+      post.map((value, index) => <Post post={value} key={index} />)
+    ) : (
+      <NoFeed />
+    );
   };
-
   return (
     <Container className={classes.container}>
       <Grid container justify="center" spacing={4}>
@@ -83,7 +91,7 @@ const HomePage = () => {
           {_renderPosts()}
         </Grid>
         <Grid item xs={3}>
-          {currentUser && user ? (
+          {currentUser && user && users ? (
             <Suggestions
               user={{
                 displayName: currentUser.displayName,

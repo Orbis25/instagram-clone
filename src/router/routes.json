@@ -7,5 +7,6 @@
     "LOGIN": "/login",
     "REGISTER": "/register",
     "RESET_PASSWORD": "/accounts/reset/password",
-    "EDIT_PROFILE": "/accounts/edit"
+    "EDIT_PROFILE": "/accounts/edit",
+    "SUGGEDTED": "/explore/people/suggested"
 }

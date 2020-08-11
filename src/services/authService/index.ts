@@ -5,6 +5,7 @@ import { RegisterModel, AuthModel } from "../../models/AuthModels";
 import { IUser } from "../../models/UserModel";
 import { users } from "../../firebase/colections.json";
 import { LOGIN } from "../../router/routes.json";
+import UserService from "../../services/userService";
 
 export default class AuthService {
   /**
@@ -16,8 +17,12 @@ export default class AuthService {
       .auth()
       .createUserWithEmailAndPassword(model.email, model.password);
   }
-  addUserDetail(user: IUser): Promise<any> {
-    return firebaseConfig.firestore().collection(users).add(user);
+  async addUserDetail(user: IUser): Promise<void> {
+    const currentUser = firebaseConfig.auth().currentUser;
+    await currentUser?.updateProfile({
+      displayName: user.userName,
+    });
+    return await firebaseConfig.firestore().collection(users).doc().set(user);
   }
   login(user: AuthModel): Promise<firebase.auth.UserCredential> {
     return firebaseConfig
@@ -46,5 +51,37 @@ export default class AuthService {
   updatePassword(newPassword: string): Promise<void> | undefined {
     const currentUser = firebaseConfig.auth().currentUser;
     return currentUser?.updatePassword(newPassword);
+  }
+
+  async loginWithFacebook(): Promise<firebase.auth.UserCredential> {
+    const f = firebase;
+    const provider = new f.auth.FacebookAuthProvider();
+    provider.addScope("user_birthday");
+    f.auth().useDeviceLanguage();
+    const result = await f.auth().signInWithPopup(provider);
+    const usr = result.user;
+    if (usr !== null) {
+      const exist = await new UserService().getUserDetailByUid(usr.uid);
+      if (exist.empty) {
+        const usrDetail: IUser = {
+          email: usr.email ?? "",
+          fullName: usr.displayName ?? "",
+          userName: usr.email ?? "",
+          photoURL: usr?.photoURL ?? "",
+          biography: "",
+          gender: "Male",
+          phoneNumber: usr.phoneNumber ?? "",
+          uidUser: usr.uid,
+          website: "",
+        };
+        await await firebaseConfig
+          .firestore()
+          .collection(users)
+          .doc()
+          .set(usrDetail);
+      }
+    }
+
+    return result;
   }
 }

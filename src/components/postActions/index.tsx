@@ -3,7 +3,6 @@ import { CardActions } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
-import TelegramIcon from "@material-ui/icons/Telegram";
 import TurnedInNotIcon from "@material-ui/icons/TurnedInNot";
 import TurnedInIcon from "@material-ui/icons/TurnedIn";
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -124,9 +123,6 @@ const PostAction: React.FC<Props> = (props) => {
           <ChatBubbleOutlineIcon />
         </IconButton>
       </Link>
-      <IconButton>
-        <TelegramIcon />
-      </IconButton>
 
       {isSaved ? (
         <IconButton

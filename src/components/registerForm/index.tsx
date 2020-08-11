@@ -39,15 +39,15 @@ const RegisterForm = () => {
     const userService = new UserService();
     const result = await userService.getUserByUserName(values.userName);
     if (result.empty) {
-      service
-        .createUser(values)
-        .then(({ user }) => {
+      try {
+        const { user } = await service.createUser(values);
+        if (user !== null) {
           service
             .addUserDetail({
               uidUser: user?.uid,
               email: values.email,
               fullName: values.fullName,
-              userName: values.fullName,
+              userName: values.userName,
               biography: "",
               gender: "Male",
               phoneNumber: "",
@@ -56,14 +56,19 @@ const RegisterForm = () => {
             })
             .then(() => {
               history.push(LOGIN);
+            })
+            .catch((error) => {
+              console.log(error);
+              setIsErrorMessage(error.message);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
-        })
-        .catch((error) => {
-          setIsErrorMessage(error.message);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        }
+      } catch (error) {
+        setIsLoading(false);
+        setIsErrorMessage(error.message);
+      }
     } else {
       setIsLoading(false);
       setIsErrorMessage("This username was taken!");
@@ -118,7 +123,7 @@ const RegisterForm = () => {
                     <Grid container justify="center">
                       <Grid item xs={10} className={classes.textFieldContainer}>
                         <TextField
-                          placeholder="Mobile Number or Email"
+                          placeholder="Email"
                           fullWidth
                           name="email"
                           variant="outlined"

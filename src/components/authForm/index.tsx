@@ -17,7 +17,7 @@ import { useStyles } from "./styles";
 import { AuthModel } from "../../models/AuthModels";
 import {
   authenticatedUser,
-  getCurrentUser,
+  authenticatedUserWithFb,
 } from "../../redux/actions/users/auth";
 import validationScheme from "./validationSchema";
 import { RootState } from "../../redux/reducers";
@@ -38,10 +38,11 @@ const AuthForm = () => {
   const handlerLogin = (values: AuthModel): void => {
     setIsLoading(true);
     dispach(authenticatedUser(values));
-    setTimeout(() => {
-      dispach(getCurrentUser());
-      setIsLoading(false);
-    }, 2000);
+  };
+
+  const handleWithFacebookLogin = () => {
+    setIsLoading(true);
+    dispach(authenticatedUserWithFb());
   };
 
   return (
@@ -114,7 +115,10 @@ const AuthForm = () => {
           <Typography className={classes.orText}>OR</Typography>
           <Grid container justify="center">
             <Grid item xs={12}>
-              <Button className={classes.facebookLink}>
+              <Button
+                onClick={handleWithFacebookLogin}
+                className={classes.facebookLink}
+              >
                 <FacebookIcon fontSize="small" />
                 <p>Log in with Facebook</p>
               </Button>

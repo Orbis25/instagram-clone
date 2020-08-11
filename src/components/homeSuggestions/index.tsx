@@ -19,8 +19,8 @@ import {
 } from "@material-ui/core";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import { Link } from "react-router-dom";
-import { GO_PROFILE } from "../../router/routes.json";
 
+import { GO_PROFILE, SUGGEDTED } from "../../router/routes.json";
 import { useStyles } from "./style";
 import { SuggestionsProps } from "./types";
 import PostService from "../../services/postService";
@@ -34,7 +34,8 @@ const Suggestions: React.FC<SuggestionsProps> = ({
   usersSuggestions,
 }) => {
   const classes = useStyles();
-
+console.log(usersSuggestions)
+  //internal component
   const NewPublication = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [publicationComment, setPublicationComment] = useState<string>("");
@@ -129,6 +130,16 @@ const Suggestions: React.FC<SuggestionsProps> = ({
       }
     };
 
+    const handleClose = () => {
+      setIsOpen(false);
+      handleClear();
+    };
+
+    const handleClear = () => {
+      setImages([]);
+      setPublicationComment("");
+    };
+
     return (
       <Grid container>
         <Grid item xs={12}>
@@ -138,7 +149,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
         </Grid>
         <Grid item>
           <Dialog
-            onClose={() => setIsOpen(false)}
+            onClose={handleClose}
             aria-labelledby="simple-dialog-title"
             open={isOpen}
             maxWidth="sm"
@@ -195,11 +206,18 @@ const Suggestions: React.FC<SuggestionsProps> = ({
                     multiple
                   />
                   <Button
+                    style={{ marginRight: 10 }}
                     onClick={handleSubmit}
                     className="btn-primary"
                     variant="contained"
                   >
                     Share
+                  </Button>
+                  <Button
+                    onClick={handleClear}
+                    variant="contained"
+                  >
+                    Clear
                   </Button>
                 </div>
               )}
@@ -239,7 +257,9 @@ const Suggestions: React.FC<SuggestionsProps> = ({
           </Grid>
           <Grid item xs={3}>
             <Typography>
-              <b className={classes.suggestionText}>See all</b>
+              <Link className="no-text-decoration text-link" to={SUGGEDTED}>
+                <b className={classes.suggestionText}>See all</b>
+              </Link>
             </Typography>
           </Grid>
         </Grid>

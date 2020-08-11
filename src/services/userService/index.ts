@@ -103,6 +103,11 @@ export default class UserService {
   > {
     return this.db.collection(collections.users).limit(5).get();
   }
+  getSuggestions(): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return this.db.collection(collections.users).get();
+  }
   getAll(): Promise<
     firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
   > {

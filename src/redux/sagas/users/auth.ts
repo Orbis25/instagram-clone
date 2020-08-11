@@ -7,6 +7,9 @@ import {
   GET_CURRENTUSER_ERROR,
   GET_CURRENTUSER_SUCCESS,
   GET_CURRENTUSER_START,
+  USER_AUTHENTICATED_SUCCESS_FB,
+  USER_AUTHENTICATED_ERROR_FB,
+  USER_AUTHENTICATED_START_FB,
 } from "../../../consts/userActionTypes";
 import AuthService from "../../../services/authService/index";
 import { AutenticatedUserType } from "./types";
@@ -21,6 +24,16 @@ export function* authenticatedUser({ payload }: AutenticatedUserType) {
   }
 }
 
+export function* authenticatedUserWithFb() {
+  try {
+    const results = yield call(new AuthService().loginWithFacebook);
+    localStorage.setItem("auth", "true");
+    yield put({ type: USER_AUTHENTICATED_SUCCESS_FB, results });
+  } catch (error) {
+    yield put({ type: USER_AUTHENTICATED_ERROR_FB, error });
+  }
+}
+
 export function* getCurrentUser() {
   try {
     const results = yield call(new AuthService().getCurrentUser);
@@ -32,5 +45,6 @@ export function* getCurrentUser() {
 
 export default function* watchAuth() {
   yield takeLatest(USER_AUTHENTICATED_START, authenticatedUser);
+  yield takeLatest(USER_AUTHENTICATED_START_FB, authenticatedUserWithFb);
   yield takeLatest(GET_CURRENTUSER_START, getCurrentUser);
 }
