@@ -3,4 +3,5 @@ export type SuggestionsProps = {
   user: ICurrentUser;
   fullName: string;
   usersSuggestions: IUser[];
+  usersFollowing: string[];
 };

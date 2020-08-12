@@ -24,6 +24,7 @@ import PostService from "../../services/postService";
 const SeeAllPage = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [usersFollowing, setUserFollowing] = useState<string[]>([]);
   const classes = useStyle();
   const currentUser: ICurrentUser = useSelector(
     (state: RootState) => state.AuthReducer.user
@@ -37,6 +38,7 @@ const SeeAllPage = () => {
   }, [currentUser?.uid]);
 
   const getSuggestionsList = () => {
+    setUsers([]);
     setIsLoading(true);
     new UserService()
       .getSuggestions()
@@ -54,17 +56,25 @@ const SeeAllPage = () => {
   };
 
   const findFollows = () => {
+    setUserFollowing([]);
     new PostService()
       .getUsersFollowing(currentUser.uid)
       .then((response) => {
         response.docs.forEach((value) => {
           const { uid } = value.data();
-          setUsers(users.filter((x) => x.uidUser !== uid));
+          setUserFollowing((x) => [...x, uid]);
         });
       })
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  const filter = (userList: IUser[]) => {
+    usersFollowing.forEach((id) => {
+      userList = userList.filter((x) => x.uidUser !== id);
+    });
+    return userList;
   };
 
   return (
@@ -78,7 +88,7 @@ const SeeAllPage = () => {
             <List>
               {!isLoading ? (
                 users.length ? (
-                  users.map((value, index) => (
+                  filter(users).map((value, index) => (
                     <SuggestionItem
                       user={value}
                       key={index}

@@ -38,11 +38,17 @@ const AuthForm = () => {
   const handlerLogin = (values: AuthModel): void => {
     setIsLoading(true);
     dispach(authenticatedUser(values));
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
   };
 
   const handleWithFacebookLogin = () => {
     setIsLoading(true);
     dispach(authenticatedUserWithFb());
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
   };
 
   return (

@@ -32,9 +32,17 @@ const Suggestions: React.FC<SuggestionsProps> = ({
   user,
   fullName,
   usersSuggestions,
+  usersFollowing
 }) => {
   const classes = useStyles();
-console.log(usersSuggestions)
+ 
+  const filter = (userList: IUser[]) => {
+    usersFollowing.forEach((id) => {
+      userList = userList.filter((x) => x.uidUser !== id);
+    });
+    return userList;
+  };
+
   //internal component
   const NewPublication = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -52,7 +60,8 @@ console.log(usersSuggestions)
       if (user.uid) {
         getUser(user.uid);
       }
-    }, []);
+      // eslint-disable-next-line
+    }, [user.uid]);
 
     const getUser = (id: string) => {
       new UserService().getUserDetailByUid(id).then((response) => {
@@ -213,10 +222,7 @@ console.log(usersSuggestions)
                   >
                     Share
                   </Button>
-                  <Button
-                    onClick={handleClear}
-                    variant="contained"
-                  >
+                  <Button onClick={handleClear} variant="contained">
                     Clear
                   </Button>
                 </div>
@@ -264,7 +270,7 @@ console.log(usersSuggestions)
           </Grid>
         </Grid>
         <List>
-          {usersSuggestions.map((value, index) => (
+          {filter(usersSuggestions).map((value, index) => (
             <ListItem key={index} alignItems="flex-start">
               <ListItemAvatar>
                 <Avatar

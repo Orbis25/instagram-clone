@@ -17,7 +17,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Avatar from "@material-ui/core/Avatar";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
-import ExploreOutlinedIcon from "@material-ui/icons/ExploreOutlined";
 import { withRouter, RouteComponentProps, Link } from "react-router-dom";
 import { RouteProps } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
@@ -188,9 +187,6 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
         <Link to={HOME}>
           <HomeOutlinedIcon className={classes.iconColor} />
         </Link>
-        <ExploreOutlinedIcon
-          className={`${classes.iconColor} ${classes.inconleft}`}
-        />
         <FavoriteBorderIcon
           className={`${classes.iconColor} ${classes.inconleft}`}
         />

@@ -2,8 +2,8 @@ import PostPage from "../pages/post";
 import ProfilePage from "../pages/profile";
 import EditProfilePage from "../pages/editProfile";
 import SuggedtedPage from "../pages/seeAll";
-
-import { PROFILE, POST, EDIT_PROFILE, SUGGEDTED } from "./routes.json";
+import ExplorePage from "../pages/explore";
+import { PROFILE, POST, EDIT_PROFILE, SUGGEDTED, EXPLORE } from "./routes.json";
 
 interface RouteType {
   path: string;
@@ -26,5 +26,9 @@ export const routes: RouteType[] = [
   {
     path: SUGGEDTED,
     component: SuggedtedPage,
+  },
+  {
+    path: EXPLORE,
+    component: ExplorePage,
   },
 ];

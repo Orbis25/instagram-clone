@@ -18,10 +18,12 @@ const HomePage = () => {
   const [user, setUser] = useState<IUser | null>(null);
   const [users, setUsers] = useState<IUser[]>([]);
   const [post, setPost] = useState<IPost[]>([]);
+  const [usersFollowingId, setUsersFollowingId] = useState<string[]>([]);
   const service = new UserService();
   const postService = new PostService();
   const classes = useStyles();
   const dispach = useDispatch();
+
   const currentUser: ICurrentUser = useSelector(
     (state: RootState) => state.AuthReducer.user
   );
@@ -58,10 +60,11 @@ const HomePage = () => {
 
   const findFollows = () => {
     getPosts(currentUser.uid);
+    setUsersFollowingId([]);
     postService.getUsersFollowing(currentUser.uid).then((response) => {
       response.docs.forEach((value) => {
         const { uid } = value.data();
-        setUsers(users.filter((x) => x.uidUser !== uid));
+        setUsersFollowingId((x) => [...x, uid]);
         getPosts(uid);
       });
     });
@@ -103,6 +106,7 @@ const HomePage = () => {
               }}
               fullName={user.fullName}
               usersSuggestions={users}
+              usersFollowing={usersFollowingId}
             />
           ) : (
             <Skeleton variant="rect" height={118} />

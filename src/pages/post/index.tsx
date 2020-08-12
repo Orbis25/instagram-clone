@@ -17,6 +17,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Carousel from "react-material-ui-carousel";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import { RootState } from "../../redux/reducers";
 import CommentPost from "../../components/commentPostList";
@@ -26,13 +27,17 @@ import PostService from "../../services/postService";
 import UserService from "../../services/userService";
 import { IUser, ICurrentUser } from "../../models/UserModel";
 import { formatDate } from "../../helpers/dateTimeHelper";
+import PostOptions from "../../components/post/optionsPost";
+import { GO_PROFILE } from "../../router/routes.json";
 
 const PostPage = () => {
   const [post, setPost] = useState<IPost | null>(null);
   const [comments, setComments] = useState<IComment[]>([]);
   const [comment, setComment] = useState<string>("");
   const [isLoadingComment, setIsLoadingComment] = useState<boolean>(false);
-  const [userNamePost, setUserNamePost] = useState<string>("");
+  const [user, setUser] = useState<IUser | null>(null);
+  const [isOpenOptions, setIsOpenOptions] = useState<boolean>(false);
+
   const classes = useStyles();
   const { id, userId } = useParams();
   const postService = new PostService();
@@ -45,7 +50,7 @@ const PostPage = () => {
     if (id && userId) {
       getPost(id, userId);
       getPostComments(id);
-      getUserNamePosted();
+      getUser();
     }
     // eslint-disable-next-line
   }, [id, userId]);
@@ -88,13 +93,21 @@ const PostPage = () => {
       });
   };
 
-  const getUserNamePosted = () => {
+  const getUser = () => {
     new UserService().getUserDetailByUid(userId).then((result) => {
       result.forEach((value) => {
-        const { userName } = value.data() as IUser;
-        setUserNamePost(userName);
+        const result = value.data() as IUser;
+        setUser(result);
       });
     });
+  };
+
+  const handleOpenOptions = () => {
+    setIsOpenOptions(true);
+  };
+
+  const handleCloseOptions = () => {
+    setIsOpenOptions(false);
   };
 
   return (
@@ -133,7 +146,7 @@ const PostPage = () => {
                   <Grid item xs={2}>
                     {post && (
                       <Avatar
-                        src={post.user?.photoURL ? post.user.photoURL : ""}
+                        src={user?.photoURL ? user.photoURL : ""}
                         alt="avatar"
                       />
                     )}
@@ -141,7 +154,11 @@ const PostPage = () => {
                   <Grid item xs={7}>
                     {post ? (
                       <Typography className={classes.userNamePosted}>
-                        <b>{userNamePost}</b> <br />
+                        <Link className="text-link no-text-decoration" to={`${GO_PROFILE}/${user?.userName}`}>
+                          <b>{user?.userName}</b>
+                        </Link>
+
+                        <br />
                         <span className="text-muted-primary">
                           {formatDate(post.createdAt)}
                         </span>
@@ -151,7 +168,13 @@ const PostPage = () => {
                     )}
                   </Grid>
                   <Grid item xs={2}>
-                    <IconButton>
+                    <PostOptions
+                      isOpen={isOpenOptions}
+                      handleCloseOptions={handleCloseOptions}
+                      postId={id}
+                      userId={userId}
+                    />
+                    <IconButton onClick={handleOpenOptions}>
                       <MoreVertIcon />
                     </IconButton>
                   </Grid>

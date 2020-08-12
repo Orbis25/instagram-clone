@@ -18,6 +18,7 @@ import { ICurrentUser } from "../../../models/UserModel";
 import UserService from "../../../services/userService";
 import { GO_POST } from "../../../router/routes.json";
 import SnackBar from "../../shared/snackbars";
+import PostService from "../../../services/postService";
 
 type Props = {
   isOpen: boolean;
@@ -60,6 +61,12 @@ const OptionsPost: React.FC<Props> = ({
     });
   };
 
+  const handleRemove = () => {
+    new PostService().removePost(postId, userId).then(() => {
+      window.location.reload();
+    });
+  };
+
   return (
     <div>
       <Dialog
@@ -77,13 +84,24 @@ const OptionsPost: React.FC<Props> = ({
           vertical="bottom"
         />
         <List className={classes.listItem}>
-          {userId !== currentUser.uid && (
+          {userId !== currentUser?.uid ? (
             <ListItem className="text-center" alignItems="center" button>
               <ListItemText
                 onClick={handleUnfollow}
                 primary={
                   <Typography className={classes.unfollowText}>
                     <b>Unfollow</b>
+                  </Typography>
+                }
+              />
+            </ListItem>
+          ) : (
+            <ListItem className="text-center" alignItems="center" button>
+              <ListItemText
+                onClick={handleRemove}
+                primary={
+                  <Typography className={classes.unfollowText}>
+                    <b>Remove</b>
                   </Typography>
                 }
               />

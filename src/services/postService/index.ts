@@ -138,6 +138,17 @@ export default class PostService {
     return await this.db.collection(collections.savedPosts).doc().set(model);
   }
 
+  async getPostSaved(
+    userId: string
+  ): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return await this.db
+      .collection(collections.savedPosts)
+      .where("userId", "==", userId)
+      .get();
+  }
+
   async checkPostsaved(model: ISavedPost): Promise<boolean> {
     return await this.db
       .collection(collections.savedPosts)
@@ -163,5 +174,34 @@ export default class PostService {
         });
         return false;
       });
+  }
+  async removePost(id: string, userId: string): Promise<void> {
+    const results = await this.db
+      .collection(collections.posts)
+      .doc(userId)
+      .collection(collections.userPosts)
+      .where("postId", "==", id)
+      .get();
+
+    results.forEach(async (response) => {
+      const { id } = response;
+      await this.db
+        .collection(collections.posts)
+        .doc(userId)
+        .collection(collections.userPosts)
+        .doc(id)
+        .delete();
+    });
+  }
+  async getMyPosts(
+    id: string
+  ): Promise<
+    firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  > {
+    return await this.db
+      .collection(collections.posts)
+      .doc(id)
+      .collection(collections.userPosts)
+      .get();
   }
 }

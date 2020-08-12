@@ -40,7 +40,7 @@ const Post: React.FC<Props> = ({ post }) => {
   const [comments, setComments] = useState<IComment[]>([]);
   const [comment, setComment] = useState<string>("");
   const [userLogged, setUserLogged] = useState<IUser | null>(null);
-  const [userPosted, setUserPosted] = useState<string>("");
+  const [userPosted, setUserPosted] = useState<IUser | null>(null);
   const [isLoadingComment, setIsLoadingComment] = useState<boolean>(false);
   const [isOpenOptions, setIsOpenOptions] = useState<boolean>(false);
 
@@ -119,8 +119,8 @@ const Post: React.FC<Props> = ({ post }) => {
   const getUserNamePosted = () => {
     userService.getUserDetailByUid(user.uid).then((result) => {
       result.forEach((value) => {
-        const { userName } = value.data() as IUser;
-        setUserPosted(userName);
+        const result = value.data() as IUser;
+        setUserPosted(result);
       });
     });
   };
@@ -136,7 +136,7 @@ const Post: React.FC<Props> = ({ post }) => {
           <Avatar
             className={classes.avatar}
             aria-label="recipe"
-            src={user?.photoURL ? user.photoURL : ""}
+            src={userPosted?.photoURL ? userPosted.photoURL : ""}
             alt={`profile-${user.displayName}`}
           />
         }
@@ -146,7 +146,7 @@ const Post: React.FC<Props> = ({ post }) => {
             className="no-text-decoration"
             style={{ color: "black" }}
           >
-            <b>{userPosted}</b>
+            <b>{userPosted?.userName}</b>
           </Link>
         }
         action={
@@ -155,16 +155,13 @@ const Post: React.FC<Props> = ({ post }) => {
           </IconButton>
         }
       ></CardHeader>
-
       <OptionsPost
         postId={postId}
         userId={user.uid}
         isOpen={isOpenOptions}
         handleCloseOptions={setIsOpenOptions}
       />
-
       <Divider />
-
       {images.length <= 1 ? (
         <CardMedia
           className={classes.imagePost}
@@ -184,18 +181,20 @@ const Post: React.FC<Props> = ({ post }) => {
           ))}
         </Carousel>
       )}
-
-      <PostActions postId={postId} userId={user.uid} />
-
+      <PostActions
+        postId={postId}
+        userId={currentUser?.uid ?? ""}
+        userPostedId={user.uid}
+      />
       <CardContent>
         <div className={classes.textPost}>
           <Typography className={classes.textPost}>
             <Link
               className="no-text-decoration"
               style={{ color: "black", marginRight: 8 }}
-              to={`${GO_PROFILE}/${userPosted}`}
+              to={`${GO_PROFILE}/${userPosted?.userName}`}
             >
-              <b>{userPosted} </b>
+              <b>{userPosted?.userName} </b>
             </Link>
             {text}
           </Typography>

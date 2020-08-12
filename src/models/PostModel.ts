@@ -21,4 +21,6 @@ export interface ILikePost {
   postId: string;
 }
 
-export interface ISavedPost extends ILikePost {}
+export interface ISavedPost extends ILikePost {
+  userPostedId: string;
+}

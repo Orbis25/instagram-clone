@@ -16,10 +16,11 @@ import { ILikePost, ISavedPost } from "../../models/PostModel";
 type Props = {
   postId: string;
   userId: string;
+  userPostedId: string;
 };
 
 const PostAction: React.FC<Props> = (props) => {
-  const { postId, userId } = props;
+  const { postId, userId, userPostedId } = props;
   const [isNoLiked, setisnoLiked] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
@@ -47,6 +48,7 @@ const PostAction: React.FC<Props> = (props) => {
     const model: ISavedPost = {
       postId,
       userId,
+      userPostedId,
     };
     new PostService().checkPostsaved(model).then((result) => {
       setIsSaved(result);
@@ -80,6 +82,7 @@ const PostAction: React.FC<Props> = (props) => {
     const model: ISavedPost = {
       postId,
       userId,
+      userPostedId,
     };
     new PostService()
       .savePost(model)
@@ -95,6 +98,7 @@ const PostAction: React.FC<Props> = (props) => {
     const model: ISavedPost = {
       postId,
       userId,
+      userPostedId,
     };
     new PostService()
       .removeSavedPost(model)
