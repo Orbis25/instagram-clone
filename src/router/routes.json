@@ -9,5 +9,6 @@
     "RESET_PASSWORD": "/accounts/reset/password",
     "EDIT_PROFILE": "/accounts/edit",
     "SUGGEDTED": "/explore/people/suggested",
-    "EXPLORE": "/explore"
+    "EXPLORE": "/explore",
+    "NOTIFICATIONS": "/notifications"
 }

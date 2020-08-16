@@ -4,6 +4,7 @@ export const useStyles = makeStyles(() =>
   createStyles({
     card: {
       maxWidth: "100%",
+      height:"auto",
       marginTop: 30,
       marginBottom: 30,
     },
@@ -20,7 +21,7 @@ export const useStyles = makeStyles(() =>
     },
     commentsContainer: {
       marginTop: 15,
-      height: "75%",
+      height: "70%",
       overflow: "auto",
       overflowX: "hidden",
     },

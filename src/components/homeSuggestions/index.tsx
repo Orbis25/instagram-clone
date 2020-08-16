@@ -32,10 +32,10 @@ const Suggestions: React.FC<SuggestionsProps> = ({
   user,
   fullName,
   usersSuggestions,
-  usersFollowing
+  usersFollowing,
 }) => {
   const classes = useStyles();
- 
+
   const filter = (userList: IUser[]) => {
     usersFollowing.forEach((id) => {
       userList = userList.filter((x) => x.uidUser !== id);
@@ -53,6 +53,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
     const [userToPublication, setUserToPublication] = useState<IUser | null>(
       null
     );
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const inputFile = useRef<any>(null);
 
@@ -124,6 +125,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
         };
 
         if (images.length) {
+          setErrorMessage("");
           service
             .create(model)
             .then(() => {
@@ -135,6 +137,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
             .finally(() => setIsLoading(false));
         } else {
           setIsLoading(false);
+          setErrorMessage("Remenber upload a pic to public a post!")
         }
       }
     };
@@ -147,6 +150,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
     const handleClear = () => {
       setImages([]);
       setPublicationComment("");
+      setErrorMessage("")
     };
 
     return (
@@ -202,6 +206,9 @@ const Suggestions: React.FC<SuggestionsProps> = ({
                 <CircularProgress />
               ) : (
                 <div>
+                  <Typography style={{ color: "#ED4956" }}>
+                    {errorMessage}
+                  </Typography>
                   <IconButton onClick={readImage}>
                     <PhotoCameraIcon />
                   </IconButton>

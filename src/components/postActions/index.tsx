@@ -10,8 +10,13 @@ import { Link } from "react-router-dom";
 
 import { GO_POST } from "../../router/routes.json";
 import PostService from "../../services/postService";
+import NotificationService from "../../services/notificationService";
 import { useStyles } from "./style";
 import { ILikePost, ISavedPost } from "../../models/PostModel";
+import {
+  INotification,
+  NotificationType,
+} from "../../models/NotificationModels";
 
 type Props = {
   postId: string;
@@ -60,9 +65,24 @@ const PostAction: React.FC<Props> = (props) => {
       postId,
       userId,
     };
-    new PostService().addLike(model).then(() => {
-      setisnoLiked(false);
-    });
+    const notification: INotification = {
+      PostId: postId,
+      type: NotificationType.Like,
+      userIdOwnerPost: userPostedId,
+      userIdNotification: userId,
+    };
+
+    if (userId !== userPostedId) {
+      new NotificationService().create(notification).then(() => {
+        new PostService().addLike(model).then(() => {
+          setisnoLiked(false);
+        });
+      });
+    } else {
+      new PostService().addLike(model).then(() => {
+        setisnoLiked(false);
+      });
+    }
   };
 
   const handleRemoveLike = () => {
@@ -121,7 +141,7 @@ const PostAction: React.FC<Props> = (props) => {
       )}
       <Link
         className="text-muted-primary no-text-decoration"
-        to={`${GO_POST}/${postId}/${userId}`}
+        to={`${GO_POST}/${postId}/${userPostedId}`}
       >
         <IconButton>
           <ChatBubbleOutlineIcon />

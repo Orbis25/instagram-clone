@@ -7,6 +7,7 @@
     "userPosts": "/userPosts",
     "following": "/following",
     "userFollowing": "/userFollowing",
+    "notification": "/notifications",
     "storage": {
         "profile": "/profiles/",
         "posts": "/posts/"

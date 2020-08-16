@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Container } from "@material-ui/core";
+import { Grid, Container , Hidden } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import Skeleton from "@material-ui/lab/Skeleton";
 
@@ -94,23 +94,25 @@ const HomePage = () => {
           {_renderPosts()}
         </Grid>
         <Grid item xs={3}>
-          {currentUser && user && users ? (
-            <Suggestions
-              user={{
-                displayName: currentUser.displayName,
-                email: currentUser.email,
-                phoneNumber: currentUser.phoneNumber,
-                photoURL: currentUser.photoURL,
-                uid: currentUser.uid,
-                emailVerified: currentUser.emailVerified,
-              }}
-              fullName={user.fullName}
-              usersSuggestions={users}
-              usersFollowing={usersFollowingId}
-            />
-          ) : (
-            <Skeleton variant="rect" height={118} />
-          )}
+          <Hidden xsDown smDown >
+            {currentUser && user && users ? (
+              <Suggestions
+                user={{
+                  displayName: currentUser.displayName,
+                  email: currentUser.email,
+                  phoneNumber: currentUser.phoneNumber,
+                  photoURL: currentUser.photoURL,
+                  uid: currentUser.uid,
+                  emailVerified: currentUser.emailVerified,
+                }}
+                fullName={user.fullName}
+                usersSuggestions={users}
+                usersFollowing={usersFollowingId}
+              />
+            ) : (
+              <Skeleton variant="rect" height={118} />
+            )}
+          </Hidden>
         </Grid>
       </Grid>
     </Container>

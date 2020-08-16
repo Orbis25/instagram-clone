@@ -3,7 +3,15 @@ import ProfilePage from "../pages/profile";
 import EditProfilePage from "../pages/editProfile";
 import SuggedtedPage from "../pages/seeAll";
 import ExplorePage from "../pages/explore";
-import { PROFILE, POST, EDIT_PROFILE, SUGGEDTED, EXPLORE } from "./routes.json";
+import NotificationPage from "../pages/notifications/index";
+import {
+  PROFILE,
+  POST,
+  EDIT_PROFILE,
+  SUGGEDTED,
+  EXPLORE,
+  NOTIFICATIONS,
+} from "./routes.json";
 
 interface RouteType {
   path: string;
@@ -30,5 +38,9 @@ export const routes: RouteType[] = [
   {
     path: EXPLORE,
     component: ExplorePage,
+  },
+  {
+    path: NOTIFICATIONS,
+    component: NotificationPage,
   },
 ];

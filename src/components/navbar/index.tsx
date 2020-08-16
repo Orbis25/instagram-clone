@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import Avatar from "@material-ui/core/Avatar";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 import { withRouter, RouteComponentProps, Link } from "react-router-dom";
@@ -31,15 +32,27 @@ import {
   GO_PROFILE,
   EDIT_PROFILE,
   HOME,
+  NOTIFICATIONS,
 } from "../../router/routes.json";
 import { RootState } from "../../redux/reducers";
 import { getCurrentUser } from "../../redux/actions/users/auth";
 import { ICurrentUser, IUser } from "../../models/UserModel";
 import AuthService from "../../services/authService";
 import UserService from "../../services/userService";
+import NotificationService from "../../services/notificationService";
+
+import {
+  INotification,
+  NotificationState,
+} from "../../models/NotificationModels";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const [userCurrent, setUserCurrent] = React.useState<IUser | null>(null);
+
+  const [haveNewNotification, setHaveNewNotification] = React.useState<boolean>(
+    false
+  );
+
   const service = new AuthService();
   const classes = useStyles();
   const dispach = useDispatch();
@@ -52,9 +65,25 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
     dispach(getCurrentUser());
     if (user?.uid) {
       getUser();
+      getNotifications();
     }
     // eslint-disable-next-line
   }, [dispach, user?.uid]);
+
+  const getNotifications = () => {
+    setHaveNewNotification(false);
+    new NotificationService()
+      .getNotifications(user?.uid)
+      .onSnapshot((results) => {
+        setHaveNewNotification(false);
+        results.forEach((val) => {
+          const _notification = val.data() as INotification;
+          if (_notification.state === NotificationState.Active) {
+            setHaveNewNotification(true);
+          }
+        });
+      });
+  };
 
   const getUser = () => {
     new UserService().getUserDetailByUid(user.uid).then((result) => {
@@ -64,6 +93,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
     });
   };
 
+  //internal component
   function ProfileAvatar() {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef<HTMLButtonElement>(null);
@@ -187,9 +217,18 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
         <Link to={HOME}>
           <HomeOutlinedIcon className={classes.iconColor} />
         </Link>
-        <FavoriteBorderIcon
-          className={`${classes.iconColor} ${classes.inconleft}`}
-        />
+        <Link to={NOTIFICATIONS}>
+          {haveNewNotification ? (
+            <FavoriteIcon
+              className={`${classes.hasNotification} ${classes.inconleft}`}
+            />
+          ) : (
+            <FavoriteBorderIcon
+              className={`${classes.iconColor} ${classes.inconleft}`}
+            />
+          )}
+        </Link>
+
         <ProfileAvatar />
       </Grid>
     );
@@ -215,8 +254,8 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
 
   const Header = () => {
     return (
-      <div style={{ flexGrow: 1 }}>
-        <AppBar position="static" className={classes.appBar}>
+      <div style={{ flexGrow: 1, marginBottom: 80 }}>
+        <AppBar position="fixed" className={classes.appBar}>
           <Container>
             <Grid container spacing={10}>
               <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>

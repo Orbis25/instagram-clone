@@ -29,6 +29,12 @@ import { IUser, ICurrentUser } from "../../models/UserModel";
 import { formatDate } from "../../helpers/dateTimeHelper";
 import PostOptions from "../../components/post/optionsPost";
 import { GO_PROFILE } from "../../router/routes.json";
+import PostActions from "../../components/postActions";
+import {
+  INotification,
+  NotificationType,
+} from "../../models/NotificationModels";
+import NotificationService from "../../services/notificationService";
 
 const PostPage = () => {
   const [post, setPost] = useState<IPost | null>(null);
@@ -82,15 +88,36 @@ const PostPage = () => {
       userId: currentUser.uid,
       postId: id,
     };
-    new PostService()
-      .addComment(cm)
-      .then(() => {
-        getPostComments(id);
-        setComment("");
-      })
-      .finally(() => {
-        setIsLoadingComment(false);
-      });
+
+    const _notification: INotification = {
+      PostId: id,
+      type: NotificationType.Commnet,
+      userIdOwnerPost: userId,
+      userIdNotification: currentUser?.uid,
+    };
+
+    if (userId !== currentUser?.uid) {
+      new NotificationService().create(_notification).then(() => {});
+      new PostService()
+        .addComment(cm)
+        .then(() => {
+          getPostComments(id);
+          setComment("");
+        })
+        .finally(() => {
+          setIsLoadingComment(false);
+        });
+    } else {
+      new PostService()
+        .addComment(cm)
+        .then(() => {
+          getPostComments(id);
+          setComment("");
+        })
+        .finally(() => {
+          setIsLoadingComment(false);
+        });
+    }
   };
 
   const getUser = () => {
@@ -154,7 +181,10 @@ const PostPage = () => {
                   <Grid item xs={7}>
                     {post ? (
                       <Typography className={classes.userNamePosted}>
-                        <Link className="text-link no-text-decoration" to={`${GO_PROFILE}/${user?.userName}`}>
+                        <Link
+                          className="text-link no-text-decoration"
+                          to={`${GO_PROFILE}/${user?.userName}`}
+                        >
                           <b>{user?.userName}</b>
                         </Link>
 
@@ -193,6 +223,13 @@ const PostPage = () => {
               </Container>
               <Container>
                 <Grid container>
+                  <Grid item xs={12}>
+                    <PostActions
+                      postId={id}
+                      userPostedId={userId}
+                      userId={currentUser?.uid}
+                    />
+                  </Grid>
                   <Grid item xs={10}>
                     <TextField
                       fullWidth

@@ -66,6 +66,10 @@ export const useStyles = makeStyles((theme: Theme) =>
       color: "#000",
       fontSize: 33,
     },
+    hasNotification: {
+      color: "#ED4956",
+      fontSize: 33,
+    },
     appBar: {
       background: "#fff",
       boxShadow: "none",

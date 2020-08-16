@@ -30,6 +30,11 @@ import { formatDate } from "../../helpers/dateTimeHelper";
 import CommentList from "./commentList";
 import PostActions from "../postActions";
 import OptionsPost from "./optionsPost";
+import NotificationService from "../../services/notificationService";
+import {
+  INotification,
+  NotificationType,
+} from "../../models/NotificationModels";
 
 type Props = {
   post: IPost;
@@ -101,18 +106,42 @@ const Post: React.FC<Props> = ({ post }) => {
         comment: comment,
         createdAt: new Date(),
       };
-      service
-        .addComment(commentPost)
-        .then(() => {
-          setComment("");
-          getComments(postId);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setIsLoadingComment(false);
-        });
+
+      const _notification: INotification = {
+        PostId: post.postId,
+        type: NotificationType.Commnet,
+        userIdOwnerPost: post.user.uid,
+        userIdNotification: userLogged?.uidUser,
+      };
+
+      if (post.postId !== userLogged?.uidUser) {
+        new NotificationService().create(_notification).then(() => {});
+        service
+          .addComment(commentPost)
+          .then(() => {
+            setComment("");
+            getComments(postId);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setIsLoadingComment(false);
+          });
+      } else {
+        service
+          .addComment(commentPost)
+          .then(() => {
+            setComment("");
+            getComments(postId);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setIsLoadingComment(false);
+          });
+      }
     }
   };
 
