@@ -5,6 +5,8 @@ import { IUser } from "../../models/UserModel";
 import { AuthModel } from "../../models/AuthModels";
 import AuthService from "../authService/";
 import collections, { storage } from "../../firebase/colections.json";
+import { FireSQL } from "firesql";
+import { DocumentData } from 'firesql/utils'
 
 export default class UserService {
   db = firebaseConfig.firestore();
@@ -153,5 +155,12 @@ export default class UserService {
       .collection(collections.userFollowing)
       .where("uid", "==", userIdToFollow)
       .get();
+  }
+
+  findUserByUserName(userName: string): Promise<DocumentData[]> {
+    const fireSql = new FireSQL(this.db);
+    return fireSql.query(
+      `SELECT * FROM users WHERE userName LIKE '${userName}%'`
+    );
   }
 }

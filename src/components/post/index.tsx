@@ -114,7 +114,7 @@ const Post: React.FC<Props> = ({ post }) => {
         userIdNotification: userLogged?.uidUser,
       };
 
-      if (post.postId !== userLogged?.uidUser) {
+      if (post.user.uid !== userLogged?.uidUser) {
         new NotificationService().create(_notification).then(() => {});
         service
           .addComment(commentPost)

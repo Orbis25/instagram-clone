@@ -3,7 +3,6 @@ import {
   AppBar,
   Toolbar,
   Container,
-  InputBase,
   Grid,
   MenuItem,
   Popper,
@@ -15,7 +14,6 @@ import {
   Hidden,
   Typography,
 } from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import Avatar from "@material-ui/core/Avatar";
@@ -49,6 +47,8 @@ import {
   INotification,
   NotificationState,
 } from "../../models/NotificationModels";
+
+import SearchBar from "./searchbar/index";
 
 const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   const [userCurrent, setUserCurrent] = React.useState<IUser | null>(null);
@@ -238,24 +238,6 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
     );
   };
 
-  const _renderSearchBar = () => {
-    return (
-      <div className={classes.search}>
-        <div className={classes.searchIcon}>
-          <SearchIcon />
-        </div>
-        <InputBase
-          placeholder="Search…"
-          classes={{
-            root: classes.inputRoot,
-            input: classes.inputInput,
-          }}
-          inputProps={{ "aria-label": "search" }}
-        />
-      </div>
-    );
-  };
-
   const Header = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const menuRoutes = [
@@ -312,7 +294,7 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
                   lg={4}
                   xl={4}
                 >
-                  {_renderSearchBar()}
+                  <SearchBar />
                 </Grid>
               </Hidden>
 
