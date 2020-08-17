@@ -74,7 +74,6 @@ export const useStyles = makeStyles((theme: Theme) =>
       background: "#fff",
       boxShadow: "none",
       border: "solid 1px #dbdbdb",
-      height: 60,
     },
     toggleMenu: {
       cursor: "pointer",
@@ -85,6 +84,12 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     iconsMenu: {
       marginRight: 15,
+    },
+    textMenuIten: {
+      marginBottom: 10,
+      listStyleType: "none",
+      color: "black",
+      cursor: "pointer",
     },
   })
 );

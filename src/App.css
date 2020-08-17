@@ -67,3 +67,15 @@ div > ::-webkit-scrollbar {
 .Carousel-indicators-24 {
   display: none !important;
 }
+
+@media (min-width: 0px) {
+  .makeStyles-card-261 {
+    height: 1300px !important;
+  }
+}
+
+@media (min-width: 1000px) {
+  .makeStyles-card-261 {
+    height: auto !important;
+  }
+}

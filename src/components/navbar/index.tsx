@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -12,6 +12,8 @@ import {
   Grow,
   MenuList,
   Divider,
+  Hidden,
+  Typography,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
@@ -23,6 +25,8 @@ import { RouteProps } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SettingsIcon from "@material-ui/icons/Settings";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
 
 import { useStyles } from "./styles";
 import {
@@ -253,6 +257,31 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
   };
 
   const Header = () => {
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const menuRoutes = [
+      { text: "Home", route: HOME },
+      { text: "Notifications", route: NOTIFICATIONS },
+      { text: "Profile", route: `${GO_PROFILE}/${userCurrent?.userName}` },
+    ];
+
+    const _renderMenu = () => {
+      return menuRoutes.map((value, index) => (
+        <li key={index} className={classes.textMenuIten}>
+          <Link className="no-text-decoration text-link" to={value.route}>
+            <Typography>{value.text}</Typography>
+          </Link>
+        </li>
+      ));
+    };
+
+    const handleLogout = () => {
+      new AuthService().logout();
+    };
+
+    const handleMenuShowOrHide = () => {
+      setIsOpen(!isOpen);
+    };
+
     return (
       <div style={{ flexGrow: 1, marginBottom: 80 }}>
         <AppBar position="fixed" className={classes.appBar}>
@@ -260,23 +289,47 @@ const Navbar: React.FC<RouteProps & RouteComponentProps> = ({ location }) => {
             <Grid container spacing={10}>
               <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                 <Toolbar>
-                  <img src="/images/logo.png" alt="logo.png" />
+                  <Hidden only={["md", "lg", "xl"]}>
+                    <IconButton
+                      className={classes.iconsMenu}
+                      onClick={handleMenuShowOrHide}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                  </Hidden>
+                  <Link to={HOME} className="no-text-decoration">
+                    <img src="/images/logo.png" alt="logo.png" />
+                  </Link>
                 </Toolbar>
               </Grid>
-              <Grid
-                className={classes.appSection}
-                item
-                xs={12}
-                sm={4}
-                md={4}
-                lg={4}
-                xl={4}
-              >
-                {_renderSearchBar()}
-              </Grid>
-              {_renderIcons()}
+              <Hidden xsDown smDown>
+                <Grid
+                  className={classes.appSection}
+                  item
+                  xs={12}
+                  sm={4}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                >
+                  {_renderSearchBar()}
+                </Grid>
+              </Hidden>
+
+              <Hidden xsDown smDown>
+                {_renderIcons()}
+              </Hidden>
             </Grid>
           </Container>
+
+          {isOpen && (
+            <ul>
+              {_renderMenu()}
+              <li onClick={handleLogout} className={classes.textMenuIten}>
+                <Typography>Logout</Typography>
+              </li>
+            </ul>
+          )}
         </AppBar>
       </div>
     );
